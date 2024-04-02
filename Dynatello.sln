@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F0497192
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynatello.Tests", "tests\Dynatello.Tests\Dynatello.Tests.csproj", "{D0078AB2-F320-42BD-89C9-ED5491A35DE1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{10579316-5B7C-49A6-8128-54F95D2BBE5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "samples\Repository\Repository.csproj", "{41B5DF1A-1542-4CBF-BEB0-CE684D054363}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +32,14 @@ Global
 		{D0078AB2-F320-42BD-89C9-ED5491A35DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0078AB2-F320-42BD-89C9-ED5491A35DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0078AB2-F320-42BD-89C9-ED5491A35DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41B5DF1A-1542-4CBF-BEB0-CE684D054363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41B5DF1A-1542-4CBF-BEB0-CE684D054363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41B5DF1A-1542-4CBF-BEB0-CE684D054363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41B5DF1A-1542-4CBF-BEB0-CE684D054363}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{892C771D-B39C-4221-B04D-FF59A061995C} = {EDABF10C-5499-442F-8BE1-9205EEE7E016}
 		{D0078AB2-F320-42BD-89C9-ED5491A35DE1} = {F0497192-D217-4A90-9C1C-E1A6DEDC4526}
+		{41B5DF1A-1542-4CBF-BEB0-CE684D054363} = {10579316-5B7C-49A6-8128-54F95D2BBE5C}
 	EndGlobalSection
 EndGlobal
