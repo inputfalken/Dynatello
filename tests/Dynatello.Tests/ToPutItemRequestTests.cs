@@ -8,7 +8,7 @@ using FluentAssertions;
 
 namespace Dynatello.Tests;
 
-[DynamoDBMarshaller(typeof(User))]
+[DynamoDBMarshaller(EntityType = typeof(User))]
 public partial class ToPutItemRequestTests
 {
     private readonly Fixture _fixture = new();
