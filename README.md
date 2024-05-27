@@ -59,11 +59,11 @@ public class ProductRepository
         _queryByPrice = Product.QueryByPrice
                 .OnTable(tableName)
                 .WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
-                .ToQueryRequestBuilder() 
+                .ToQueryRequestBuilder()
             with
-            {
-                IndexName = Product.PriceIndex
-            };
+        {
+            IndexName = Product.PriceIndex
+        };
     }
 
     public async Task<IReadOnlyList<Product>> SearchByPrice(decimal price)
@@ -119,16 +119,15 @@ public class ProductRepository
 }
 
 // These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
-[DynamoDBMarshaller(typeof(Product), PropertyName = "Put")]
-[DynamoDBMarshaller(typeof(Product), ArgumentType = typeof(string), PropertyName = "GetById")]
-[DynamoDBMarshaller(typeof(Product), ArgumentType = typeof((string Id, decimal NewPrice, DateTime TimeStamp)), PropertyName = "UpdatePrice")]
-[DynamoDBMarshaller(typeof(Product), ArgumentType = typeof(decimal), PropertyName = "QueryByPrice")]
+[DynamoDBMarshaller(AccessName = "Put")]
+[DynamoDBMarshaller(AccessName = "GetById", ArgumentType = typeof(string))]
+[DynamoDBMarshaller(AccessName = "UpdatePrice", ArgumentType = typeof((string Id, decimal NewPrice, DateTime TimeStamp)))]
+[DynamoDBMarshaller(AccessName = "QueryByPrice", ArgumentType = typeof(decimal))]
 public partial record Product(
     [property: DynamoDBHashKey, DynamoDBGlobalSecondaryIndexRangeKey(Product.PriceIndex)] string Id,
     [property: DynamoDBGlobalSecondaryIndexHashKey(Product.PriceIndex)] decimal Price,
     string Description,
-    Product.MetadataEntity Metadata
-)
+    Product.MetadataEntity Metadata)
 {
     public const string PriceIndex = "PriceIndex";
 

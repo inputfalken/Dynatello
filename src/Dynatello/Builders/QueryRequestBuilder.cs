@@ -20,6 +20,9 @@ public readonly record struct QueryRequestBuilder<T>
         TableName = tableName;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
     public QueryRequestBuilder()
     {
@@ -80,6 +83,7 @@ public readonly record struct QueryRequestBuilder<T>
 
         if (Limit is { } limit)
             queryRequest.Limit = limit;
+        else 
 
         if (IndexName is not null)
             queryRequest.IndexName = IndexName;

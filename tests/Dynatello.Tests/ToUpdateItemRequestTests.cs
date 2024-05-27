@@ -7,8 +7,8 @@ using FluentAssertions;
 
 namespace Dynatello.Tests;
 
-[DynamoDBMarshaller(typeof(User))]
-[DynamoDBMarshaller(typeof(User), PropertyName = "UpdateEmail", ArgumentType = typeof(UpdateUserEmail))]
+[DynamoDBMarshaller(EntityType = typeof(User))]
+[DynamoDBMarshaller(EntityType = typeof(User), AccessName = "UpdateEmail", ArgumentType = typeof(UpdateUserEmail))]
 public partial class ToUpdateItemRequestTests
 {
     private readonly Fixture _fixture = new();
