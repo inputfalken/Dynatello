@@ -106,8 +106,7 @@ public partial record Product(
     [property: DynamoDBHashKey, DynamoDBGlobalSecondaryIndexRangeKey(Product.PriceIndex)] string Id,
     [property: DynamoDBGlobalSecondaryIndexHashKey(Product.PriceIndex)] decimal Price,
     string Description,
-    Product.MetadataEntity Metadata
-)
+    Product.MetadataEntity Metadata)
 {
     public const string PriceIndex = "PriceIndex";
 
