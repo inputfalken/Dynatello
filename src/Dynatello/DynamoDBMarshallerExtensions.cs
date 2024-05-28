@@ -44,27 +44,18 @@ public static class DynamoDBMarshallerExtensions
     }
 
 
-    public static Func<TArg, Task<T?>> WithGetRequestFactory
-        <T, TArg, TReferences, TArgumentReferences>
-        (
-            this IAmazonDynamoDB dynamoDb,
-            TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-            Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, Func<TArg, GetItemRequest>> fn,
-            Action<GetItemResponse>? onResponse = null)
-        where TReferences : IAttributeExpressionNameTracker
-        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+    public static GetTaskHandler<T, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
+        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, GetRequestBuilder<TArg>> requestBuilderSelector,
+        IAmazonDynamoDB dynamoDb
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
     {
-        var fn2 = fn(item);
 
-        return async x =>
-        {
-            var response = await dynamoDb.GetItemAsync(fn2(x));
-            onResponse?.Invoke(response);
-            if (response.HttpStatusCode is HttpStatusCode.NotFound || response.IsItemSet is false)
-                return default;
-            
-            return item.Item.Unmarshall(response.Item);
-        };
+        var requestBuilder = requestBuilderSelector(item);
+        return new GetTaskHandler<T, TArg>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
     }
 
     internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>
