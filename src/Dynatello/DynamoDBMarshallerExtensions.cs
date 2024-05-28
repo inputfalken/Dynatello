@@ -1,5 +1,8 @@
+using System.Net;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator;
+using Dynatello.Builders;
 using Dynatello.Builders.Types;
 using static DynamoDBGenerator.Extensions.DynamoDBMarshallerExtensions;
 
@@ -38,6 +41,30 @@ public static class DynamoDBMarshallerExtensions
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
     {
         return new TableAccess<T, TArg, TReferences, TArgumentReferences>(in tableName, in item);
+    }
+
+
+    public static Func<TArg, Task<T?>> WithGetRequestFactory
+        <T, TArg, TReferences, TArgumentReferences>
+        (
+            this IAmazonDynamoDB dynamoDb,
+            TableAccess<T, TArg, TReferences, TArgumentReferences> item,
+            Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, Func<TArg, GetItemRequest>> fn,
+            Action<GetItemResponse>? onResponse = null)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+    {
+        var fn2 = fn(item);
+
+        return async x =>
+        {
+            var response = await dynamoDb.GetItemAsync(fn2(x));
+            onResponse?.Invoke(response);
+            if (response.HttpStatusCode is HttpStatusCode.NotFound || response.IsItemSet is false)
+                return default;
+            
+            return item.Item.Unmarshall(response.Item);
+        };
     }
 
     internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>

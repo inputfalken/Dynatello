@@ -61,3 +61,4 @@ public readonly record struct GetRequestBuilder<T>
         return request;
     }
 }
+
