@@ -44,7 +44,7 @@ public class ProductRepository
 
         _getProductByTable = Product.GetById
             .OnTable(tableName)
-            .ToGetRequestBuilder(arg => arg); // Since the ArgumentType is set to string, we don't need to select a property.
+            .ToGetRequestBuilder(); // There's an overload available where you could pass a Func<T, TPartition> to select your partition.
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
