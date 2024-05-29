@@ -5,6 +5,9 @@ using DynamoDBGenerator.Exceptions;
 
 namespace Dynatello.Builders;
 
+/// <summary>
+/// A task handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
+/// </summary>
 public record struct GetTaskHandler<T, TArg> where TArg : notnull
 {
     private readonly IAmazonDynamoDB _client;
@@ -22,18 +25,27 @@ public record struct GetTaskHandler<T, TArg> where TArg : notnull
         _onRequest = null;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
     public GetTaskHandler()
     {
         throw Constants.InvalidConstructor();
     }
 
+    /// <summary>
+    /// Configure the <see cref="GetItemResponse"/> before the handler uses the response.
+    /// </summary>
     public GetTaskHandler<T, TArg> OnResponse(Action<GetItemResponse> configure)
     {
         _onResponse = configure;
         return this;
     }
 
+    /// <summary>
+    /// Configure the <see cref="GetItemRequest"/> before the request is sent to DynamoDB.
+    /// </summary>
     public GetTaskHandler<T, TArg> OnRequest(Action<GetItemRequest> configure)
     {
         _onRequest = configure;
@@ -46,6 +58,9 @@ public record struct GetTaskHandler<T, TArg> where TArg : notnull
     /// <exception cref="DynamoDBMarshallingException">
     /// If the unmarshalling could not build the <typeparamref name="T"/> correctly due to missing required values.
     /// </exception>
+    /// <remarks>
+    /// Will not do any exception when invcoking <see cref="IAmazonDynamoDB.GetItemAsync(GetItemRequest, CancellationToken)"/>.
+    /// </remarks>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);

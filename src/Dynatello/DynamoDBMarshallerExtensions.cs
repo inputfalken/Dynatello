@@ -43,7 +43,7 @@ public static class DynamoDBMarshallerExtensions
         return new TableAccess<T, TArg, TReferences, TArgumentReferences>(in tableName, in item);
     }
 
-
+    /// Create a <see cref="GetTaskHandler{T, TArg}"/>
     public static GetTaskHandler<T, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, GetRequestBuilder<TArg>> requestBuilderSelector,
