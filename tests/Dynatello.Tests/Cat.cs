@@ -11,7 +11,7 @@ namespace Dynatello.Tests;
 [DynamoDBMarshaller(AccessName = "GetByCompositeInvalidPartition", ArgumentType = typeof((string Id, Guid HomeId)))]
 [DynamoDBMarshaller(AccessName = "GetByCompositeInvalidRange", ArgumentType = typeof((Guid Id, string HomeId)))]
 [DynamoDBMarshaller(AccessName = "GetByCompositeInvalidPartitionAndRange", ArgumentType = typeof((double Id, string HomeId)))]
-public readonly partial record struct Cat(
+public partial record Cat(
     [property: DynamoDBHashKey] Guid Id,
     [property: DynamoDBRangeKey] Guid HomeId,
     string Name,

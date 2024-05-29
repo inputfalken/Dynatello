@@ -1,6 +1,7 @@
 
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using DynamoDBGenerator.Exceptions;
 
 namespace Dynatello.Builders;
 
@@ -39,16 +40,22 @@ public record struct GetTaskHandler<T, TArg> where TArg : notnull
         return this;
     }
 
-    public async Task<T> Send(TArg arg, CancellationToken cancellationToken)
+    /// <summary>
+    /// Sends a request towards DynamoDB and unmarshalls the response.
+    /// </summary>
+    /// <exception cref="DynamoDBMarshallingException">
+    /// If the unmarshalling could not build the <typeparamref name="T"/> correctly due to missing required values.
+    /// </exception>
+    public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
         _onRequest?.Invoke(request);
-        
+
         var response = await _client.GetItemAsync(request, cancellationToken);
         _onResponse?.Invoke(response);
 
-        return _createItem(response.Item);
+        return response.IsItemSet
+          ? _createItem(response.Item)
+          : default;
     }
-
-
 }
