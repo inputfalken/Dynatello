@@ -1,5 +1,4 @@
 using DynamoDBGenerator;
-using Dynatello.Builders.Types;
 
 namespace Dynatello;
 

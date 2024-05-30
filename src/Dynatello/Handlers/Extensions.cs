@@ -37,6 +37,7 @@ public static class Extensions
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
+      where T : notnull
     {
 
         var requestBuilder = requestBuilderSelector(item);

@@ -9,7 +9,7 @@ namespace Dynatello.Builders;
 /// <typeparam name="T">
 /// The type you need to provide in you execution.
 /// </typeparam>
-public readonly record struct GetRequestBuilder<T>
+public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemRequest>
 {
     private readonly Func<T, Dictionary<string, AttributeValue>> _keysSelector;
 
