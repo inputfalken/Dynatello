@@ -1,14 +1,15 @@
-
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Exceptions;
 
-namespace Dynatello.Builders;
+namespace Dynatello.Handlers;
 
 /// <summary>
 /// A task handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
 /// </summary>
-public record struct GetTaskHandler<T, TArg> where TArg : notnull
+public record struct GetTaskHandler<T, TArg> : ITaskHandler<T, TArg>, IRequestHandler<GetItemRequest>, IResponseHandler<GetItemResponse>
+  where T : notnull
+  where TArg : notnull
 {
     private readonly IAmazonDynamoDB _client;
     private readonly Func<TArg, GetItemRequest> _createRequest;
@@ -35,24 +36,6 @@ public record struct GetTaskHandler<T, TArg> where TArg : notnull
     }
 
     /// <summary>
-    /// Configure the <see cref="GetItemResponse"/> before the handler uses the response.
-    /// </summary>
-    public GetTaskHandler<T, TArg> OnResponse(Action<GetItemResponse> configure)
-    {
-        _onResponse = configure;
-        return this;
-    }
-
-    /// <summary>
-    /// Configure the <see cref="GetItemRequest"/> before the request is sent to DynamoDB.
-    /// </summary>
-    public GetTaskHandler<T, TArg> OnRequest(Action<GetItemRequest> configure)
-    {
-        _onRequest = configure;
-        return this;
-    }
-
-    /// <summary>
     /// Sends a request towards DynamoDB and unmarshalls the response.
     /// </summary>
     /// <exception cref="DynamoDBMarshallingException">
@@ -73,4 +56,8 @@ public record struct GetTaskHandler<T, TArg> where TArg : notnull
           ? _createItem(response.Item)
           : default;
     }
+
+    public void Configure(Action<GetItemRequest> configure) => _onRequest = configure;
+
+    public void Configure(Action<GetItemResponse> configure) => _onResponse = configure;
 }

@@ -4,7 +4,9 @@ using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 using Dynatello.Builders;
 using NSubstitute;
+
 namespace Dynatello.Tests;
+
 public class GetTaskHandlerTests
 {
     [Fact]

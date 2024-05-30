@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator;
 using Dynatello.Builders;
 using Dynatello.Builders.Types;
+using Dynatello.Handlers;
 using static DynamoDBGenerator.Extensions.DynamoDBMarshallerExtensions;
 
 namespace Dynatello;
