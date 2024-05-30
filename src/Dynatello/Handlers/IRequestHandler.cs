@@ -1,12 +1,22 @@
-
-using Amazon.DynamoDBv2;
-
 namespace Dynatello.Handlers;
 
-public interface IRequestHandler<out T> where T : AmazonDynamoDBRequest
+public interface IRequestHandler<T, in TArg> : IRequestHandler
+  where T : notnull
+  where TArg : notnull
 {
-    /// <summary>
-    /// Configure the <typeparamref name="T"/>.
-    /// </summary>
-    public void Configure(Action<T> configure);
+
+    public Task<T?> Send(TArg arg, CancellationToken cancellationToken);
+
+    async Task<object?> IRequestHandler.Send(object arg, CancellationToken cancellationToken)
+    {
+        if (arg is not TArg tArg)
+            throw new Exception();
+
+        return await Send(tArg, cancellationToken);
+    }
+
+}
+public interface IRequestHandler
+{
+    public Task<object?> Send(object arg, CancellationToken cancellationToken);
 }

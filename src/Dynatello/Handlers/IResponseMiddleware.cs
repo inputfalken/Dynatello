@@ -2,7 +2,7 @@ using Amazon.Runtime;
 
 namespace Dynatello.Handlers;
 
-public interface IResponseHandler<out T> where T : AmazonWebServiceResponse
+public interface IResponseMiddleware<out T> where T : AmazonWebServiceResponse
 {
     /// <summary>
     /// Configure the <typeparamref name="T"/> .

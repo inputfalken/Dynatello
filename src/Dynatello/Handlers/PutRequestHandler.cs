@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Handlers;
 
-public record struct PutRequestHandler<T> : ITaskHandler<T, T>, IRequestHandler<PutItemRequest>, IResponseHandler<PutItemResponse>
+public record struct PutRequestHandler<T> : IRequestHandler<T, T>, IRequestMiddleware<PutItemRequest>, IResponseMiddleware<PutItemResponse>
   where T : notnull
 {
     private readonly IAmazonDynamoDB _client;

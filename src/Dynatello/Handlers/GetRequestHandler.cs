@@ -6,7 +6,7 @@ namespace Dynatello.Handlers;
 /// <summary>
 /// A request handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
 /// </summary>
-public record struct GetRequestHandler<T, TArg> : ITaskHandler<T, TArg>, IRequestHandler<GetItemRequest>, IResponseHandler<GetItemResponse>
+public record struct GetRequestHandler<T, TArg> : IRequestHandler<T, TArg>, IRequestMiddleware<GetItemRequest>, IResponseMiddleware<GetItemResponse>
   where T : notnull
   where TArg : notnull
 {

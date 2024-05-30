@@ -4,7 +4,6 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
 using DynamoDBGenerator;
 using Dynatello.Builders;
-using Dynatello.Builders.Types;
 
 namespace Dynatello.Handlers;
 
@@ -12,7 +11,7 @@ public static class Extensions
 {
 
     private static T OnRequest<T, TRequest>(T source, Action<TRequest> configure)
-      where T : ITaskHandler, IRequestHandler<TRequest>
+      where T : IRequestHandler, IRequestMiddleware<TRequest>
       where TRequest : AmazonDynamoDBRequest
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -22,7 +21,7 @@ public static class Extensions
         return source;
     }
     private static T OnResponse<T, TResponse>(T source, Action<TResponse> configure)
-      where T : ITaskHandler, IResponseHandler<TResponse>
+      where T : IRequestHandler, IResponseMiddleware<TResponse>
       where TResponse : AmazonWebServiceResponse
     {
         source.Configure(configure);
@@ -45,13 +44,13 @@ public static class Extensions
     }
 
     public static T OnRequest<T>(this T source, Action<GetItemRequest> configure)
-      where T : ITaskHandler, IRequestHandler<GetItemRequest>
+      where T : IRequestHandler, IRequestMiddleware<GetItemRequest>
     {
         return OnRequest<T, GetItemRequest>(source, configure);
     }
 
     public static T OnResponse<T>(this T source, Action<GetItemResponse> configure)
-      where T : ITaskHandler, IResponseHandler<GetItemResponse>
+      where T : IRequestHandler, IResponseMiddleware<GetItemResponse>
     {
         return OnResponse<T, GetItemResponse>(source, configure);
     }
