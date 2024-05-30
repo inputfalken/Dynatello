@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 using Dynatello.Builders;
+using Dynatello.Handlers;
 using NSubstitute;
 
 namespace Dynatello.Tests;

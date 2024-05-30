@@ -2,6 +2,9 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
+using DynamoDBGenerator;
+using Dynatello.Builders;
+using Dynatello.Builders.Types;
 
 namespace Dynatello.Handlers;
 
@@ -14,7 +17,7 @@ public static class Extensions
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(configure);
-        
+
         source.Configure(configure);
         return source;
     }
@@ -24,6 +27,21 @@ public static class Extensions
     {
         source.Configure(configure);
         return source;
+    }
+
+    /// Create a <see cref="GetRequestHandler{T, TArg}"/>
+    public static GetRequestHandler<T, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
+        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, GetRequestBuilder<TArg>> requestBuilderSelector,
+        IAmazonDynamoDB dynamoDb
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+    {
+
+        var requestBuilder = requestBuilderSelector(item);
+        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
     }
 
     public static T OnRequest<T>(this T source, Action<GetItemRequest> configure)

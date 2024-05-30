@@ -1,6 +1,6 @@
 using DynamoDBGenerator;
 
-namespace Dynatello.Builders.Types;
+namespace Dynatello;
 
 /// <summary>
 /// A type that can be used to chain behaviour through a builder pattern.

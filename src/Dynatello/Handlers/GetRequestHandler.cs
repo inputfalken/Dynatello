@@ -3,7 +3,6 @@ using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Exceptions;
 
 namespace Dynatello.Handlers;
-
 /// <summary>
 /// A request handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
 /// </summary>
