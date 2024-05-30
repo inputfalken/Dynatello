@@ -44,8 +44,8 @@ public static class DynamoDBMarshallerExtensions
         return new TableAccess<T, TArg, TReferences, TArgumentReferences>(in tableName, in item);
     }
 
-    /// Create a <see cref="GetTaskHandler{T, TArg}"/>
-    public static GetTaskHandler<T, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
+    /// Create a <see cref="GetRequestHandler{T, TArg}"/>
+    public static GetRequestHandler<T, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, GetRequestBuilder<TArg>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
@@ -56,7 +56,7 @@ public static class DynamoDBMarshallerExtensions
     {
 
         var requestBuilder = requestBuilderSelector(item);
-        return new GetTaskHandler<T, TArg>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
+        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
     }
 
     internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>

@@ -5,9 +5,9 @@ using DynamoDBGenerator.Exceptions;
 namespace Dynatello.Handlers;
 
 /// <summary>
-/// A task handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
+/// A request handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
 /// </summary>
-public record struct GetTaskHandler<T, TArg> : ITaskHandler<T, TArg>, IRequestHandler<GetItemRequest>, IResponseHandler<GetItemResponse>
+public record struct GetRequestHandler<T, TArg> : ITaskHandler<T, TArg>, IRequestHandler<GetItemRequest>, IResponseHandler<GetItemResponse>
   where T : notnull
   where TArg : notnull
 {
@@ -17,7 +17,7 @@ public record struct GetTaskHandler<T, TArg> : ITaskHandler<T, TArg>, IRequestHa
     private Action<GetItemResponse>? _onResponse;
     private Action<GetItemRequest>? _onRequest;
 
-    internal GetTaskHandler(IAmazonDynamoDB client, Func<TArg, GetItemRequest> createRequest, Func<Dictionary<string, AttributeValue>, T> createItem)
+    internal GetRequestHandler(IAmazonDynamoDB client, Func<TArg, GetItemRequest> createRequest, Func<Dictionary<string, AttributeValue>, T> createItem)
     {
         _client = client;
         _createRequest = createRequest;
@@ -30,7 +30,7 @@ public record struct GetTaskHandler<T, TArg> : ITaskHandler<T, TArg>, IRequestHa
     /// 
     /// </summary>
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public GetTaskHandler()
+    public GetRequestHandler()
     {
         throw Constants.InvalidConstructor();
     }
