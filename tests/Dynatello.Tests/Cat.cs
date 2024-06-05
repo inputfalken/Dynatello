@@ -7,6 +7,7 @@ namespace Dynatello.Tests;
 [DynamoDBMarshaller(AccessName = "QueryWithCuteness", ArgumentType = typeof((Guid Id, double MinimumCuteness)))]
 [DynamoDBMarshaller(AccessName = "GetByCompositeKey", ArgumentType = typeof((Guid Id, Guid HomeId)))]
 [DynamoDBMarshaller(AccessName = "GetById", ArgumentType = typeof(Guid))]
+[DynamoDBMarshaller(AccessName = "Put")]
 [DynamoDBMarshaller(AccessName = "GetByInvalidPartition", ArgumentType = typeof(string))]
 [DynamoDBMarshaller(AccessName = "GetByCompositeInvalidPartition", ArgumentType = typeof((string Id, Guid HomeId)))]
 [DynamoDBMarshaller(AccessName = "GetByCompositeInvalidRange", ArgumentType = typeof((Guid Id, string HomeId)))]

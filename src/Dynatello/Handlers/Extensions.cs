@@ -28,6 +28,21 @@ public static class Extensions
         return source;
     }
 
+    /// Create a <see cref="PutRequestHandler{T}"/>
+    public static PutRequestHandler<T> WithPutRequestFactory<T, TArg, TReferences, TArgumentReferences>(
+        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, PutRequestBuilder<T>> requestBuilderSelector,
+        IAmazonDynamoDB dynamoDb
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+
+        var requestBuilder = requestBuilderSelector(item);
+        return new PutRequestHandler<T>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
+    }
     /// Create a <see cref="GetRequestHandler{T, TArg}"/>
     public static GetRequestHandler<T, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,

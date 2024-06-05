@@ -7,7 +7,6 @@ using Dynatello.Handlers;
 using NSubstitute;
 
 namespace Dynatello.Tests;
-
 public class GetTaskHandlerTests
 {
     [Fact]

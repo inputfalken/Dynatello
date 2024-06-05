@@ -4,9 +4,9 @@ namespace Dynatello.Handlers;
 
 internal static class ReturnValueExtensions
 {
-    public static bool IsValueProvided(this ReturnValue value)
+    public static bool IsValueProvided(this ReturnValue? value)
     {
-        if (value == ReturnValue.NONE)
+        if (value is null || value == ReturnValue.NONE)
             return false;
 
         if (value == ReturnValue.ALL_NEW)
