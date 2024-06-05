@@ -26,6 +26,7 @@ using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Attributes;
 using Dynatello;
 using Dynatello.Builders;
+using Dynatello.Handlers;
 using Dynatello.Builders.Types;
 
 ProductRepository productRepository = new ProductRepository("MY_TABLE", new AmazonDynamoDBClient());
@@ -33,7 +34,7 @@ ProductRepository productRepository = new ProductRepository("MY_TABLE", new Amaz
 public class ProductRepository
 {
     private readonly IAmazonDynamoDB _amazonDynamoDb;
-    private readonly GetRequestBuilder<string> _getProductByTable;
+    private readonly IRequestHandler<Product, string> _getProductByIdRequest;
     private readonly UpdateRequestBuilder<(string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
     private readonly PutRequestBuilder<Product> _createProduct;
     private readonly QueryRequestBuilder<decimal> _queryByPrice;
@@ -42,9 +43,9 @@ public class ProductRepository
     {
         _amazonDynamoDb = amazonDynamoDb;
 
-        _getProductByTable = Product.GetById
+        _getProductByIdRequest = Product.GetById
             .OnTable(tableName)
-            .ToGetRequestBuilder(); // There's an overload available where you could pass a Func<T, TPartition> to select your partition.
+            .WithGetRequestFactory(x => x.ToGetRequestBuilder(), amazonDynamoDb);
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
@@ -88,20 +89,9 @@ public class ProductRepository
             throw new Exception("...");
     }
 
-    public async Task<Product?> GetById(string id)
+    public Task<Product?> GetById(string id)
     {
-        GetItemRequest request = _getProductByTable.Build(id);
-        GetItemResponse response = await _amazonDynamoDb.GetItemAsync(request);
-
-        if (response.HttpStatusCode is HttpStatusCode.NotFound)
-            return null;
-
-        if (response.HttpStatusCode is not HttpStatusCode.OK)
-            throw new Exception("...");
-
-        Product product = Product.GetById.Unmarshall(response.Item);
-
-        return product;
+        return _getProductByIdRequest.Send(id, default);
     }
 
     public async Task<Product?> UpdatePrice(string id, decimal price)
