@@ -21,10 +21,13 @@ public record struct PutRequestHandler<T> : IRequestHandler<T, T>, IRequestMiddl
         _onRequest = null;
     }
 
+    ///<inheritdoc/>
     public void Configure(Action<PutItemRequest> configure) => _onRequest = configure;
 
+    ///<inheritdoc/>
     public void Configure(Action<PutItemResponse> configure) => _onResponse = configure;
-
+    
+    ///<inheritdoc/>
     public async Task<T?> Send(T arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
@@ -36,28 +39,5 @@ public record struct PutRequestHandler<T> : IRequestHandler<T, T>, IRequestMiddl
         return request.ReturnValues.IsValueProvided()
           ? _createItem(response.Attributes)
           : default;
-    }
-}
-
-internal static class ReturnValueExtensions
-{
-    public static bool IsValueProvided(this ReturnValue value)
-    {
-        if (value == ReturnValue.NONE)
-            return false;
-
-        if (value == ReturnValue.ALL_NEW)
-            return true;
-
-        if (value == ReturnValue.ALL_OLD)
-            return true;
-
-        if (value == ReturnValue.UPDATED_OLD)
-            return true;
-
-        if (value == ReturnValue.UPDATED_NEW)
-            return true;
-
-        throw new ArgumentOutOfRangeException($"Could not determine value '{value.Value}' from type {typeof(ReturnValue)}");
     }
 }

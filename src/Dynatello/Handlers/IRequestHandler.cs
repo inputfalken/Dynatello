@@ -1,10 +1,16 @@
 namespace Dynatello.Handlers;
 
+/// <summary>
+/// 
+/// </summary>
 public interface IRequestHandler<T, in TArg> : IRequestHandler
   where T : notnull
   where TArg : notnull
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public Task<T?> Send(TArg arg, CancellationToken cancellationToken);
 
     async Task<object?> IRequestHandler.Send(object arg, CancellationToken cancellationToken)
@@ -16,7 +22,13 @@ public interface IRequestHandler<T, in TArg> : IRequestHandler
     }
 
 }
+/// <summary>
+/// 
+/// </summary>
 public interface IRequestHandler
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public Task<object?> Send(object arg, CancellationToken cancellationToken);
 }

@@ -2,6 +2,9 @@ using Amazon.Runtime;
 
 namespace Dynatello.Handlers;
 
+/// <summary>
+/// 
+/// </summary>
 public interface IResponseMiddleware<out T> where T : AmazonWebServiceResponse
 {
     /// <summary>

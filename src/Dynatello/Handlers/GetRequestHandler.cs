@@ -41,7 +41,7 @@ public record struct GetRequestHandler<T, TArg> : IRequestHandler<T, TArg>, IReq
     /// If the unmarshalling could not build the <typeparamref name="T"/> correctly due to missing required values.
     /// </exception>
     /// <remarks>
-    /// Will not do any exception when invcoking <see cref="IAmazonDynamoDB.GetItemAsync(GetItemRequest, CancellationToken)"/>.
+    /// Will not do any exception handling when invcoking <see cref="IAmazonDynamoDB.GetItemAsync(GetItemRequest, CancellationToken)"/>.
     /// </remarks>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
