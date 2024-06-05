@@ -3,11 +3,11 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Handlers;
 
-internal sealed class UpdateRequestHandler<T> : IRequestHandler<T>
+internal sealed class UpdateRequestHandler<T> : IRequestHandler<UpdateItemResponse, T>
+where T : notnull
 {
     private readonly IAmazonDynamoDB _dynamoDb;
     private readonly Func<T, UpdateItemRequest> _createRequest;
-    private readonly Func<AttributeValue, T> _unmarshall;
 
     internal UpdateRequestHandler(IAmazonDynamoDB dynamoDb, Func<T, UpdateItemRequest> createRequest)
     {
@@ -15,9 +15,12 @@ internal sealed class UpdateRequestHandler<T> : IRequestHandler<T>
         _createRequest = createRequest;
     }
 
-    public Task Send(T arg, CancellationToken cancellationToken)
+    public async Task<UpdateItemResponse> Send(T arg, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var request = _createRequest(arg);
+        var response = await _dynamoDb.UpdateItemAsync(request, cancellationToken);
+
+        return response;
     }
 }
 

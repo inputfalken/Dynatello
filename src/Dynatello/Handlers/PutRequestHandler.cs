@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Handlers;
 
-internal sealed class PutRequestHandler<T> : IRequestHandler<T, T>
+internal sealed class PutRequestHandler<T> : IRequestHandler<T?, T>
   where T : notnull
 {
     private readonly IAmazonDynamoDB _client;
@@ -16,7 +16,6 @@ internal sealed class PutRequestHandler<T> : IRequestHandler<T, T>
         _createRequest = createRequest;
         _createItem = createItem;
     }
-
 
     ///<inheritdoc/>
     public async Task<T?> Send(T arg, CancellationToken cancellationToken)

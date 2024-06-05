@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Attributes;
@@ -13,10 +12,10 @@ ProductRepository productRepository = new ProductRepository("MY_TABLE", new Amaz
 public class ProductRepository
 {
     private readonly IAmazonDynamoDB _amazonDynamoDb;
-    private readonly IRequestHandler<Product, string> _getProductByIdRequest;
-    private readonly UpdateRequestBuilder<(string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
-    private readonly PutRequestBuilder<Product> _createProduct;
-    private readonly QueryRequestBuilder<decimal> _queryByPrice;
+    private readonly IRequestHandler<Product?, string> _getProductByIdRequest;
+    private readonly IRequestHandler<UpdateItemResponse, (string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
+    private readonly IRequestHandler<Product?, Product> _createProduct;
+    private readonly IRequestHandler<IReadOnlyList<Product>, decimal> _queryByPrice;
 
     public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
     {
@@ -28,63 +27,41 @@ public class ProductRepository
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
-            .WithUpdateExpression((db, arg) => $"SET {db.Price} = {arg.NewPrice}, {db.Metadata.ModifiedAt} = {arg.TimeStamp}") // Specify the update operation
-            .ToUpdateItemRequestBuilder((marshaller, arg) => marshaller.PartitionKey(arg.Id));
+            .WithUpdateRequestFactory(
+              x => x
+                  .WithUpdateExpression((db, arg) => $"SET {db.Price} = {arg.NewPrice}, {db.Metadata.ModifiedAt} = {arg.TimeStamp}") // Specify the update operation
+                  .ToUpdateItemRequestBuilder(((marshaller, arg) => marshaller.PartitionKey(arg.Id))),
+              amazonDynamoDb
+            );
 
         _createProduct = Product.Put
             .OnTable(tableName)
-            .WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
-            .ToPutRequestBuilder();
+            .WithPutRequestFactory(
+              x => x
+                .WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
+                .ToPutRequestBuilder(),
+              amazonDynamoDb
+            );
 
         _queryByPrice = Product.QueryByPrice
                 .OnTable(tableName)
-                .WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
-                .ToQueryRequestBuilder()
-            with
-        {
-            IndexName = Product.PriceIndex
-        };
+                .WithQueryRequestFactory(
+                  x => x
+                    .WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
+                    .ToQueryRequestBuilder() with
+                  { IndexName = Product.PriceIndex },
+                  amazonDynamoDb
+                );
+
     }
 
-    public async Task<IReadOnlyList<Product>> SearchByPrice(decimal price)
-    {
-        QueryRequest request = _queryByPrice.Build(price);
-        QueryResponse? response = await _amazonDynamoDb.QueryAsync(request);
+    public Task<IReadOnlyList<Product>> SearchByPrice(decimal price) => _queryByPrice.Send(price, default);
 
-        if (response.HttpStatusCode is not HttpStatusCode.OK)
-            throw new Exception("...");
+    public Task<Product?> Create(Product product) => _createProduct.Send(product, default);
 
-        return response.Items
-            .Select(x => Product.QueryByPrice.Unmarshall(x))
-            .ToArray();
-    }
+    public Task<Product?> GetById(string id) => _getProductByIdRequest.Send(id, default);
 
-    public async Task Create(Product product)
-    {
-        PutItemRequest request = _createProduct.Build(product);
-        PutItemResponse response = await _amazonDynamoDb.PutItemAsync(request);
-
-        if (response.HttpStatusCode is not HttpStatusCode.OK)
-            throw new Exception("...");
-    }
-
-    public Task<Product?> GetById(string id)
-    {
-        return _getProductByIdRequest.Send(id, default);
-    }
-
-    public async Task<Product?> UpdatePrice(string id, decimal price)
-    {
-        UpdateItemRequest request = _updatePrice.Build((id, price, DateTime.UtcNow));
-        UpdateItemResponse response = await _amazonDynamoDb.UpdateItemAsync(request);
-
-        if (response.HttpStatusCode is not HttpStatusCode.OK)
-            return null;
-
-        Product product = Product.UpdatePrice.Unmarshall(response.Attributes);
-
-        return product;
-    }
+    public Task UpdatePrice(string id, decimal price) => _updatePrice.Send((id, price, DateTime.UtcNow), default);
 }
 
 // These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
