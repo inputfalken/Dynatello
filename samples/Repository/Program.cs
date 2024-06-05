@@ -11,7 +11,6 @@ ProductRepository productRepository = new ProductRepository("MY_TABLE", new Amaz
 
 public class ProductRepository
 {
-    private readonly IAmazonDynamoDB _amazonDynamoDb;
     private readonly IRequestHandler<Product?, string> _getProductByIdRequest;
     private readonly IRequestHandler<UpdateItemResponse, (string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
     private readonly IRequestHandler<Product?, Product> _createProduct;
@@ -19,8 +18,6 @@ public class ProductRepository
 
     public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
     {
-        _amazonDynamoDb = amazonDynamoDb;
-
         _getProductByIdRequest = Product.GetById
             .OnTable(tableName)
             .WithGetRequestFactory(x => x.ToGetRequestBuilder(), amazonDynamoDb);
@@ -52,7 +49,6 @@ public class ProductRepository
                   { IndexName = Product.PriceIndex },
                   amazonDynamoDb
                 );
-
     }
 
     public Task<IReadOnlyList<Product>> SearchByPrice(decimal price) => _queryByPrice.Send(price, default);

@@ -8,7 +8,6 @@ namespace Dynatello.Handlers;
 
 public static class Extensions
 {
-
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<IReadOnlyList<T>, TArg> WithQueryRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
@@ -20,10 +19,9 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-
-        var requestBuilder = requestBuilderSelector(item);
-        return new QueryRequestHandler<T, TArg>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
+        return new QueryRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item).Build, item.Item.Unmarshall);
     }
+    
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<UpdateItemResponse, TArg> WithUpdateRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
@@ -35,10 +33,7 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-
-        var requestBuilder = requestBuilderSelector(item);
-
-        return new UpdateRequestHandler<TArg>(dynamoDb, requestBuilder.Build);
+        return new UpdateRequestHandler<TArg>(dynamoDb, requestBuilderSelector(item).Build);
     }
 
     /// Create a <see cref="PutRequestHandler{T}"/>
@@ -52,9 +47,7 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-
-        var requestBuilder = requestBuilderSelector(item);
-        return new PutRequestHandler<T>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
+        return new PutRequestHandler<T>(dynamoDb, requestBuilderSelector(item).Build, item.Item.Unmarshall);
     }
 
     /// Create a <see cref="GetRequestHandler{T, TArg}"/>
@@ -68,8 +61,7 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        var requestBuilder = requestBuilderSelector(item);
-        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilder.Build, item.Item.Unmarshall);
+        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item).Build, item.Item.Unmarshall);
     }
 
 }
