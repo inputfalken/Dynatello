@@ -19,8 +19,8 @@ public static class Extensions
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
     {
         return new QueryRequestBuilder<TArg>(
-            source.TableAccess.Item.ComposeAttributeExpression(source.Condition, source.Filter),
-            source.TableAccess.TableName
+            source.Builder.Marshaller.ComposeAttributeExpression(source.Condition, source.Filter),
+            source.Builder.TableName
         );
     }
 
@@ -34,8 +34,8 @@ public static class Extensions
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
     {
         return new QueryRequestBuilder<TArg>(
-            source.TableAccess.Item.ComposeAttributeExpression(source.Condition, null),
-            source.TableAccess.TableName
+            source.Builder.Marshaller.ComposeAttributeExpression(source.Condition, null),
+            source.Builder.TableName
         );
     }
 
@@ -43,14 +43,14 @@ public static class Extensions
     /// 
     /// </summary>
     public static GetRequestBuilder<TArg> ToGetRequestBuilder<T, TArg, TReferences, TArgumentReferences>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> source)
+        this RequestBuilder<T, TArg, TReferences, TArgumentReferences> source)
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
         where TArg : notnull
     {
         return new GetRequestBuilder<TArg>(
             source.TableName,
-            source.Item.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => y, null)
+            source.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => y, null)
         );
     }
 
@@ -59,7 +59,7 @@ public static class Extensions
     /// </summary>
     public static GetRequestBuilder<TArg> ToGetRequestBuilder<T, TArg, TReferences, TArgumentReferences,
         TPartition>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> source,
+        this RequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
         Func<TArg, TPartition> partitionKeySelector)
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
@@ -67,7 +67,7 @@ public static class Extensions
     {
         return new GetRequestBuilder<TArg>(
             source.TableName,
-            source.Item.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), null)
+            source.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), null)
         );
     }
 
@@ -76,7 +76,7 @@ public static class Extensions
     /// </summary>
     public static GetRequestBuilder<TArg> ToGetRequestBuilder<T, TArg,
         TReferences, TArgumentReferences, TPartition, TRange>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> source,
+        this RequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
         Func<TArg, TPartition> partitionKeySelector,
         Func<TArg, TRange> rangeKeySelector)
         where TReferences : IAttributeExpressionNameTracker
@@ -86,7 +86,7 @@ public static class Extensions
     {
         return new GetRequestBuilder<TArg>(
             source.TableName,
-            source.Item.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), y => rangeKeySelector(y))
+            source.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), y => rangeKeySelector(y))
         );
     }
 
@@ -101,10 +101,10 @@ public static class Extensions
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
     {
         return new UpdateRequestBuilder<TArg>(
-            source.TableAccess.Item.ComposeAttributeExpression(source.Update, null),
-            source.TableAccess.TableName,
+            source.Builder.Marshaller.ComposeAttributeExpression(source.Update, null),
+            source.Builder.TableName,
             keySelector,
-            source.TableAccess.Item.PrimaryKeyMarshaller
+            source.Builder.Marshaller.PrimaryKeyMarshaller
         );
     }
 
@@ -119,10 +119,10 @@ public static class Extensions
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
     {
         return new UpdateRequestBuilder<TArg>(
-            source.TableAccess.Item.ComposeAttributeExpression(source.Update, source.Condition),
-            source.TableAccess.TableName,
+            source.Builder.Marshaller.ComposeAttributeExpression(source.Update, source.Condition),
+            source.Builder.TableName,
             keySelector,
-            source.TableAccess.Item.PrimaryKeyMarshaller
+            source.Builder.Marshaller.PrimaryKeyMarshaller
         );
     }
 
@@ -131,7 +131,7 @@ public static class Extensions
     /// </summary>
     public static KeyConditionExpression<T, TArg, TReferences, TArgumentReferences> WithKeyConditionExpression<T, TArg,
         TReferences, TArgumentReferences>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> source,
+        this RequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
         Func<TReferences, TArgumentReferences, string> condition)
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
@@ -144,7 +144,7 @@ public static class Extensions
     /// </summary>
     public static PutRequestBuilder<T> ToPutRequestBuilder<T, TReferences,
         TArgumentReferences>(
-        this TableAccess<T, T, TReferences, TArgumentReferences> source
+        this RequestBuilder<T, T, TReferences, TArgumentReferences> source
     )
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<T>
@@ -152,7 +152,7 @@ public static class Extensions
         return new PutRequestBuilder<T>
         (
             null,
-            source.Item.Marshall,
+            source.Marshaller.Marshall,
             source.TableName
         );
     }
@@ -169,9 +169,9 @@ public static class Extensions
     {
         return new PutRequestBuilder<T>
         (
-            source.TableAccess.Item.ComposeAttributeExpression(null, source.Condition),
-            source.TableAccess.Item.Marshall,
-            source.TableAccess.TableName
+            source.Builder.Marshaller.ComposeAttributeExpression(null, source.Condition),
+            source.Builder.Marshaller.Marshall,
+            source.Builder.TableName
         );
     }
 }

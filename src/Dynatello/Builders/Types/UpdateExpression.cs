@@ -9,7 +9,7 @@ public readonly record struct UpdateExpression<T, TArg, TReferences, TArgumentRe
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
-    internal readonly TableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess;
+    internal readonly RequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
     internal readonly Func<TReferences, TArgumentReferences, string> Update;
 
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
@@ -19,10 +19,10 @@ public readonly record struct UpdateExpression<T, TArg, TReferences, TArgumentRe
     }
 
     internal UpdateExpression(
-        in TableAccess<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in RequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> update)
     {
-        TableAccess = tableAccess;
+        Builder = tableAccess;
         Update = update;
     }
 }

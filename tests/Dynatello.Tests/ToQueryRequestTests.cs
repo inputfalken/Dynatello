@@ -14,6 +14,7 @@ public class ToQueryRequestTests
     {
         var builder = Cat.QueryWithCuteness
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithKeyConditionExpression((x, y) => $"{x.Id} = {y.Id}")
             .ToQueryRequestBuilder();
         Cat.Fixture.CreateMany<(Guid Id, double MinimumCuteness)>(10).Should().AllSatisfy(tuple =>
@@ -55,6 +56,7 @@ public class ToQueryRequestTests
     {
         var builder = Cat.QueryWithCuteness
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithKeyConditionExpression((x, y) => $"{x.Id} = {y.Id}")
             .WithFilterExpression((x, y) => $"{x.Cuteness} > {y.MinimumCuteness}")
             .ToQueryRequestBuilder();

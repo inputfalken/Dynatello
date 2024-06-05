@@ -18,12 +18,14 @@ public partial class ToUpdateItemRequestTests
     {
         var updateFirst = UpdateEmail
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}")
             .WithConditionExpression((x, y) => $"{x.Id} = {y.UserId} AND {x.Email} <> {y.UserEmail}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.UserId, y.UserEmail));
 
         var conditionFirst = UpdateEmail
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithConditionExpression((x, y) => $"{x.Id} = {y.UserId} AND {x.Email} <> {y.UserEmail}")
             .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.UserId, y.UserEmail));
@@ -76,6 +78,7 @@ public partial class ToUpdateItemRequestTests
     {
         var builder = UpdateEmail
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.UserId, y.UserEmail));
 
@@ -120,6 +123,7 @@ public partial class ToUpdateItemRequestTests
     {
         var builder = UserMarshaller
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Id, y.Email));
 
@@ -163,12 +167,14 @@ public partial class ToUpdateItemRequestTests
     {
         var updateFirst = UserMarshaller
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}")
             .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Id, y.Email));
 
         var conditionFirst = UserMarshaller
             .OnTable("TABLE")
+            .WithRequestBuilder()
             .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}")
             .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Id, y.Email));

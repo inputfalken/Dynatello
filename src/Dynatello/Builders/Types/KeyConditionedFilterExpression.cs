@@ -11,7 +11,7 @@ public readonly struct KeyConditionedFilterExpression<T, TArg, TReferences, TArg
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
     internal readonly Func<TReferences, TArgumentReferences, string> Filter;
-    internal readonly TableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess;
+    internal readonly RequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
 
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
     public KeyConditionedFilterExpression()
@@ -20,12 +20,12 @@ public readonly struct KeyConditionedFilterExpression<T, TArg, TReferences, TArg
     }
 
     internal KeyConditionedFilterExpression(
-        in TableAccess<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in RequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> condition,
         in Func<TReferences, TArgumentReferences, string> filter
     )
     {
-        TableAccess = tableAccess;
+        Builder = tableAccess;
         Condition = condition;
         Filter = filter;
     }

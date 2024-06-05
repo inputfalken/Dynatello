@@ -1,9 +1,9 @@
 using DynamoDBGenerator;
 
-namespace Dynatello;
+namespace Dynatello.Builders;
 
 /// <summary>
-/// Represents the combination of a Marshaller together with a TableName.
+/// Represents a type to create various request builders from.
 /// </summary>
 /// <typeparam name="T">
 /// The type that exists in the table.
@@ -20,20 +20,20 @@ namespace Dynatello;
 /// <returns>
 /// A <see cref="TableAccess{T,TArg,TReferences,TArgumentReferences}"/> that can be used to chain behaviour through a builder pattern.
 /// </returns>
-public readonly record struct TableAccess<T, TArg, TReferences, TArgumentReferences>
+public readonly record struct RequestBuilder<T, TArg, TReferences, TArgumentReferences>
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public TableAccess()
+    public RequestBuilder()
     {
         throw Constants.InvalidConstructor();
     }
 
-    internal TableAccess(in string tableName, in IDynamoDBMarshaller<T, TArg, TReferences, TArgumentReferences> item)
+    internal RequestBuilder(TableAccess<T, TArg, TReferences, TArgumentReferences> tableAccess)
     {
-        TableName = tableName ?? throw new ArgumentNullException(nameof(tableName));
-        Marshaller = item ?? throw new ArgumentNullException(nameof(item));
+        TableName = tableAccess.TableName;
+        Marshaller = tableAccess.Marshaller;
     }
 
     internal readonly string TableName;

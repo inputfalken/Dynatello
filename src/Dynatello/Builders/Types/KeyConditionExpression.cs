@@ -10,7 +10,7 @@ public readonly struct KeyConditionExpression<T, TArg, TReferences, TArgumentRef
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
-    internal readonly TableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess;
+    internal readonly RequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
 
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
     public KeyConditionExpression()
@@ -19,11 +19,11 @@ public readonly struct KeyConditionExpression<T, TArg, TReferences, TArgumentRef
     }
 
     internal KeyConditionExpression(
-        in TableAccess<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in RequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> condition
     )
     {
-        TableAccess = tableAccess;
+        Builder = tableAccess;
         Condition = condition;
     }
 }

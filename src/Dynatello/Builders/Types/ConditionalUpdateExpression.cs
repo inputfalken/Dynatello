@@ -10,7 +10,7 @@ public readonly record struct ConditionalUpdateExpression<T, TArg, TReferences, 
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
-    internal readonly TableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess;
+    internal readonly RequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
     internal readonly Func<TReferences, TArgumentReferences, string> Update;
 
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
@@ -20,11 +20,11 @@ public readonly record struct ConditionalUpdateExpression<T, TArg, TReferences, 
     }
 
     internal ConditionalUpdateExpression(
-        in TableAccess<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in RequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> update,
         in Func<TReferences, TArgumentReferences, string> condition)
     {
-        TableAccess = tableAccess;
+        Builder = tableAccess;
         Update = update;
         Condition = condition;
     }

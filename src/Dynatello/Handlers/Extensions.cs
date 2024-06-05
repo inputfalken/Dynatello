@@ -11,7 +11,7 @@ public static class Extensions
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<IReadOnlyList<T>, TArg> WithQueryRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, QueryRequestBuilder<TArg>> requestBuilderSelector,
+        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -19,13 +19,13 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new QueryRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item).Build, item.Item.Unmarshall);
+        return new QueryRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item.WithRequestBuilder()).Build, item.Marshaller.Unmarshall);
     }
-    
+
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<UpdateItemResponse, TArg> WithUpdateRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, UpdateRequestBuilder<TArg>> requestBuilderSelector,
+        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -33,13 +33,13 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new UpdateRequestHandler<TArg>(dynamoDb, requestBuilderSelector(item).Build);
+        return new UpdateRequestHandler<TArg>(dynamoDb, requestBuilderSelector(item.WithRequestBuilder()).Build);
     }
 
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<T?, T> WithPutRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, PutRequestBuilder<T>> requestBuilderSelector,
+        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -47,13 +47,13 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new PutRequestHandler<T>(dynamoDb, requestBuilderSelector(item).Build, item.Item.Unmarshall);
+        return new PutRequestHandler<T>(dynamoDb, requestBuilderSelector(item.WithRequestBuilder()).Build, item.Marshaller.Unmarshall);
     }
 
     /// Create a <see cref="GetRequestHandler{T, TArg}"/>
     public static IRequestHandler<T?, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
         this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<TableAccess<T, TArg, TReferences, TArgumentReferences>, GetRequestBuilder<TArg>> requestBuilderSelector,
+        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -61,7 +61,7 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item).Build, item.Item.Unmarshall);
+        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item.WithRequestBuilder()).Build, item.Marshaller.Unmarshall);
     }
 
 }
