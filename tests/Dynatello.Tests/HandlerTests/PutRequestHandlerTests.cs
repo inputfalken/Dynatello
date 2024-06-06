@@ -1,12 +1,11 @@
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 using Dynatello.Builders;
 using Dynatello.Handlers;
 using NSubstitute;
 
-namespace Dynatello.Tests;
+namespace Dynatello.Tests.HandlerTests;
 
 public class PutRequestHandlerTests
 {
