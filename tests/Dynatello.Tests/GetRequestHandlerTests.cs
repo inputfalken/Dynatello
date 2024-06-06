@@ -7,7 +7,7 @@ using Dynatello.Handlers;
 using NSubstitute;
 
 namespace Dynatello.Tests;
-public class GetTaskHandlerTests
+public class GetRequestHandlerTests
 {
     [Fact]
     public async Task Send_SuccessMock_ShouldReturnItem()

@@ -1,4 +1,3 @@
-
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -9,7 +8,7 @@ using NSubstitute;
 
 namespace Dynatello.Tests;
 
-public class PutTaskHandlerTests
+public class PutRequestHandlerTests
 {
     [Theory]
     [InlineData("ALL_NEW")]
