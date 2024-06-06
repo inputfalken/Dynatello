@@ -10,8 +10,8 @@ public static class Extensions
 {
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<IReadOnlyList<T>, TArg> WithQueryRequestFactory<T, TArg, TReferences, TArgumentReferences>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector,
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -24,8 +24,8 @@ public static class Extensions
 
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<UpdateItemResponse, TArg> WithUpdateRequestFactory<T, TArg, TReferences, TArgumentReferences>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -38,8 +38,8 @@ public static class Extensions
 
     /// Create a <see cref="PutRequestHandler{T}"/>
     public static IRequestHandler<T?, T> WithPutRequestFactory<T, TArg, TReferences, TArgumentReferences>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker
@@ -52,8 +52,8 @@ public static class Extensions
 
     /// Create a <see cref="GetRequestHandler{T, TArg}"/>
     public static IRequestHandler<T?, TArg> WithGetRequestFactory<T, TArg, TReferences, TArgumentReferences>(
-        this TableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<RequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilder<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
     )
       where TReferences : IAttributeExpressionNameTracker

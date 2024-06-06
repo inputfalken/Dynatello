@@ -1,4 +1,5 @@
 using DynamoDBGenerator;
+using Dynatello.Handlers;
 
 namespace Dynatello.Builders.Types;
 
@@ -35,7 +36,7 @@ public static class Extensions
 
     public static UpdateExpression<T, TArg, TReferences, TArgumentReferences> WithUpdateExpression<T, TArg, TReferences,
         TArgumentReferences>(
-        this RequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
+        this IRequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
         Func<TReferences, TArgumentReferences, string> updateExpression
     )
         where TReferences : IAttributeExpressionNameTracker
@@ -47,7 +48,7 @@ public static class Extensions
     public static ConditionExpression<T, TArg, TReferences, TArgumentReferences> WithConditionExpression<T, TArg,
         TReferences,
         TArgumentReferences>(
-        this RequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
+        this IRequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
         Func<TReferences, TArgumentReferences, string> condition
     )
         where TReferences : IAttributeExpressionNameTracker

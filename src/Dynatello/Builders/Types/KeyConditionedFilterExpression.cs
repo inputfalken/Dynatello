@@ -1,4 +1,5 @@
 using DynamoDBGenerator;
+using Dynatello.Handlers;
 
 namespace Dynatello.Builders.Types;
 
@@ -11,7 +12,7 @@ public readonly struct KeyConditionedFilterExpression<T, TArg, TReferences, TArg
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
     internal readonly Func<TReferences, TArgumentReferences, string> Filter;
-    internal readonly RequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
+    internal readonly IRequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
 
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
     public KeyConditionedFilterExpression()
@@ -20,7 +21,7 @@ public readonly struct KeyConditionedFilterExpression<T, TArg, TReferences, TArg
     }
 
     internal KeyConditionedFilterExpression(
-        in RequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in IRequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> condition,
         in Func<TReferences, TArgumentReferences, string> filter
     )
