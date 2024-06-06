@@ -20,11 +20,11 @@ public class ProductRepository
     {
         _getProductByIdRequest = Product.GetById
             .OnTable(tableName)
-            .WithGetRequestFactory(x => x.ToGetRequestBuilder(), amazonDynamoDb);
+            .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDb);
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
-            .WithUpdateRequestFactory(
+            .ToUpdateRequestHandler(
               x => x
                   .WithUpdateExpression((db, arg) => $"SET {db.Price} = {arg.NewPrice}, {db.Metadata.ModifiedAt} = {arg.TimeStamp}") // Specify the update operation
                   .ToUpdateItemRequestBuilder(((marshaller, arg) => marshaller.PartitionKey(arg.Id))),
@@ -33,7 +33,7 @@ public class ProductRepository
 
         _createProduct = Product.Put
             .OnTable(tableName)
-            .WithPutRequestFactory(
+            .ToPutRequestHandler(
               x => x
                 .WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
                 .ToPutRequestBuilder(),
@@ -42,7 +42,7 @@ public class ProductRepository
 
         _queryByPrice = Product.QueryByPrice
                 .OnTable(tableName)
-                .WithQueryRequestFactory(
+                .ToQueryRequestHandler(
                   x => x
                     .WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
                     .ToQueryRequestBuilder() with

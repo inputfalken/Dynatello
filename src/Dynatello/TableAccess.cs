@@ -1,11 +1,11 @@
 using DynamoDBGenerator;
-using Dynatello.Handlers;
+using Dynatello.Builders;
 
 namespace Dynatello;
 
-internal class TableAccess<T, TArg, TReferences, TArgumentReferences> : 
-  ITableAccess<T, TArg, TReferences, TArgumentReferences>, 
-  IRequestBuilder<T, TArg, TReferences, TArgumentReferences>
+internal class TableAccess<T, TArg, TReferences, TArgumentReferences> :
+  ITableAccess<T, TArg, TReferences, TArgumentReferences>,
+  IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>
   where TReferences : IAttributeExpressionNameTracker
   where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
@@ -19,5 +19,6 @@ internal class TableAccess<T, TArg, TReferences, TArgumentReferences> :
 
     public string TableName { get; }
 
-    ITableAccess<T, TArg, TReferences, TArgumentReferences> IRequestBuilder<T, TArg, TReferences, TArgumentReferences>.TableAccess => this;
+    ITableAccess<T, TArg, TReferences, TArgumentReferences> IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>.TableAccess => this;
 }
+

@@ -6,3 +6,4 @@ public interface IRequestBuilder<T, TRequest> where TRequest : AmazonDynamoDBReq
 {
     public TRequest Build(T arg);
 }
+

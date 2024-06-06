@@ -13,7 +13,7 @@ public class ToGetItemRequestTests
     {
         var act = () => Cat.GetByCompositeInvalidPartition
             .OnTable("TABLE")
-            .WithRequestBuilder()
+            .ToRequestBuilderFactory()
             .ToGetRequestBuilder(x => x.Id, x => x.HomeId)
             .Build(("", Guid.Empty));
 
@@ -27,7 +27,7 @@ public class ToGetItemRequestTests
     {
         var act = () => Cat.GetByCompositeInvalidRange
             .OnTable("TABLE")
-            .WithRequestBuilder()
+            .ToRequestBuilderFactory()
             .ToGetRequestBuilder(x => x.Id, x => x.HomeId)
             .Build((Guid.Empty, ""));
 
@@ -41,7 +41,7 @@ public class ToGetItemRequestTests
     {
         var act = () => Cat.GetByCompositeInvalidPartitionAndRange
             .OnTable("TABLE")
-            .WithRequestBuilder()
+            .ToRequestBuilderFactory()
             .ToGetRequestBuilder(x => x.Id, x => x.HomeId)
             .Build((2.3, ""));
 
@@ -55,7 +55,7 @@ public class ToGetItemRequestTests
     {
         var act = () => Cat.GetByInvalidPartition
             .OnTable("TABLE")
-            .WithRequestBuilder()
+            .ToRequestBuilderFactory()
             .ToGetRequestBuilder(x => x)
             .Build("TEST");
 
@@ -69,7 +69,7 @@ public class ToGetItemRequestTests
     {
         var getCatByPartitionKey = Cat.GetById
             .OnTable("TABLE")
-            .WithRequestBuilder()
+            .ToRequestBuilderFactory()
             .ToGetRequestBuilder(x => x);
 
         Cat.Fixture
@@ -98,7 +98,7 @@ public class ToGetItemRequestTests
     {
         var getCatByCompositeKeys = Cat.GetByCompositeKey
             .OnTable("TABLE")
-            .WithRequestBuilder()
+            .ToRequestBuilderFactory()
             .ToGetRequestBuilder(x => x.Id, x => x.HomeId);
 
         Cat.Fixture

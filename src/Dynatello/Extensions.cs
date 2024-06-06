@@ -1,6 +1,5 @@
 using DynamoDBGenerator;
 using Dynatello.Builders;
-using Dynatello.Handlers;
 
 namespace Dynatello;
 
@@ -23,9 +22,9 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Creates a <see cref="IRequestBuilder{T, TArg, TReferences, TArgumentReferences}"/> that's used setting up request builders.
+    /// Creates a <see cref="IRequestBuilderFactory{T, TArg, TReferences, TArgumentReferences}"/> that's used setting up request builders.
     /// </summary>
-    public static IRequestBuilder<T, TArg, TReferences, TArgumentReferences> WithRequestBuilder
+    public static IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> ToRequestBuilderFactory
         <T, TArg, TReferences, TArgumentReferences>
         (this ITableAccess<T, TArg, TReferences, TArgumentReferences> item)
         where TReferences : IAttributeExpressionNameTracker

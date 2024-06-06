@@ -1,5 +1,4 @@
 using DynamoDBGenerator;
-using Dynatello.Handlers;
 
 namespace Dynatello.Builders.Types;
 
@@ -11,7 +10,7 @@ public readonly record struct ConditionExpression<T, TArg, TReferences, TArgumen
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
-    internal readonly IRequestBuilder<T, TArg, TReferences, TArgumentReferences> Builder;
+    internal readonly IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> Builder;
 
     [Obsolete(Constants.ObsoleteConstructorMessage, true)]
     public ConditionExpression()
@@ -20,7 +19,7 @@ public readonly record struct ConditionExpression<T, TArg, TReferences, TArgumen
     }
 
     internal ConditionExpression(
-        in IRequestBuilder<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> condition
     )
     {

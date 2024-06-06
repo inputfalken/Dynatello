@@ -1,7 +1,6 @@
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator;
 using Dynatello.Builders.Types;
-using Dynatello.Handlers;
 
 namespace Dynatello.Builders;
 
@@ -44,7 +43,7 @@ public static class Extensions
     /// 
     /// </summary>
     public static GetRequestBuilder<TArg> ToGetRequestBuilder<T, TArg, TReferences, TArgumentReferences>(
-        this IRequestBuilder<T, TArg, TReferences, TArgumentReferences> source)
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source)
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
         where TArg : notnull
@@ -60,7 +59,7 @@ public static class Extensions
     /// </summary>
     public static GetRequestBuilder<TArg> ToGetRequestBuilder<T, TArg, TReferences, TArgumentReferences,
         TPartition>(
-        this IRequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
         Func<TArg, TPartition> partitionKeySelector)
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
@@ -77,7 +76,7 @@ public static class Extensions
     /// </summary>
     public static GetRequestBuilder<TArg> ToGetRequestBuilder<T, TArg,
         TReferences, TArgumentReferences, TPartition, TRange>(
-        this IRequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
         Func<TArg, TPartition> partitionKeySelector,
         Func<TArg, TRange> rangeKeySelector)
         where TReferences : IAttributeExpressionNameTracker
@@ -132,7 +131,7 @@ public static class Extensions
     /// </summary>
     public static KeyConditionExpression<T, TArg, TReferences, TArgumentReferences> WithKeyConditionExpression<T, TArg,
         TReferences, TArgumentReferences>(
-        this IRequestBuilder<T, TArg, TReferences, TArgumentReferences> source,
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
         Func<TReferences, TArgumentReferences, string> condition)
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
@@ -145,7 +144,7 @@ public static class Extensions
     /// </summary>
     public static PutRequestBuilder<T> ToPutRequestBuilder<T, TReferences,
         TArgumentReferences>(
-        this IRequestBuilder<T, T, TReferences, TArgumentReferences> source
+        this IRequestBuilderFactory<T, T, TReferences, TArgumentReferences> source
     )
         where TReferences : IAttributeExpressionNameTracker
         where TArgumentReferences : IAttributeExpressionValueTracker<T>

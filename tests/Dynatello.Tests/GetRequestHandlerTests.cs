@@ -26,7 +26,7 @@ public class GetRequestHandlerTests
 
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .WithGetRequestFactory(x => x.ToGetRequestBuilder(), amazonDynamoDB)
+          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB)
           .Send(expected.Id, default);
 
         Assert.Equal(expected, actual);
@@ -47,7 +47,7 @@ public class GetRequestHandlerTests
 
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .WithGetRequestFactory(x => x.ToGetRequestBuilder(), amazonDynamoDB)
+          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB)
           .Send(expected.Id, default);
 
         Assert.Equal((Cat)null!, actual);
