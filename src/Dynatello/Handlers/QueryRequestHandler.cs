@@ -25,11 +25,9 @@ internal sealed class QueryRequestHandler<T, TArg> : IRequestHandler<IReadOnlyLi
         do
         {
             response = await _client.QueryAsync(request, cancellationToken);
-
-            foreach (var item in response.Items)
-                list.Add(_createItem(item));
-
             request.ExclusiveStartKey = response.LastEvaluatedKey;
+
+            list.AddRange(response.Items.Select(_createItem));
 
         } while (response.LastEvaluatedKey.Count > 0);
 

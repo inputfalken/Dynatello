@@ -39,20 +39,24 @@ public class QueryRequestHandlerTests
         var amazonDynamoDB = Substitute.For<IAmazonDynamoDB>();
         var chunks = Cat.Fixture.CreateMany<Cat>(20).Chunk(5).Select((x, y) => (x, y)).ToArray();
 
+        await Task.Delay(10000);
         foreach (var (elements, index) in chunks)
         {
-            Dictionary<string, AttributeValue> LastEvaluatedKey = index == 0
-              ? new()
-              : LastEvaluatedKey = new() { { nameof(Cat.Id), new AttributeValue() { S = elements[^1].Id.ToString() } } };
-            
+            var lastId = elements[^1].Id.ToString();
+            var key = new Dictionary<string, AttributeValue>() { { nameof(Cat.Id), new AttributeValue() { S = lastId } } };
             amazonDynamoDB
-              .QueryAsync(Arg.Is<QueryRequest>(x => x.ExclusiveStartKey == LastEvaluatedKey))
+              .QueryAsync(index is 0
+                  ? Arg.Is<QueryRequest>(x => x.ExclusiveStartKey.Count == 0)
+                  : Arg.Is<QueryRequest>(x => x.ExclusiveStartKey[nameof(Cat.Id)].S == lastId),
+                Arg.Any<CancellationToken>()
+              )
               .Returns(new QueryResponse
               {
                   HttpStatusCode = System.Net.HttpStatusCode.OK,
                   Items = elements.Select(x => Cat.QueryWithCuteness.Marshall(x)).ToList(),
-                  LastEvaluatedKey = LastEvaluatedKey
+                  LastEvaluatedKey = index == chunks.Length - 1 ? new() : key
               });
+
         }
 
         var actual = await Cat.QueryWithCuteness
@@ -63,6 +67,8 @@ public class QueryRequestHandlerTests
           { IndexName = "INDEX" }, amazonDynamoDB)
           .Send((Guid.NewGuid(), 2), default);
 
-        Assert.Equal(chunks.SelectMany(x => x.x), actual);
+        var expected = chunks.SelectMany(x => x.x).ToArray();
+        Assert.Equal(expected.Length, actual.Count);
+        Assert.Equal(expected, actual);
     }
 }
