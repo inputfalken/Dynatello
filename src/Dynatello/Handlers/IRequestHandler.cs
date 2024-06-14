@@ -1,5 +1,3 @@
-using DynamoDBGenerator;
-
 namespace Dynatello.Handlers;
 
 /// <summary>
