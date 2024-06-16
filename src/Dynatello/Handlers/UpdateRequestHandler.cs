@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Handlers;
 
-internal sealed class UpdateRequestHandler<T, TArg> : IRequestHandler<T?, TArg>
+internal sealed class UpdateRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
 where T : notnull
 {
     private readonly IAmazonDynamoDB _dynamoDb;

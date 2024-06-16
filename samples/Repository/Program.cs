@@ -10,10 +10,10 @@ ProductRepository productRepository = new ProductRepository("MY_TABLE", new Amaz
 
 public class ProductRepository
 {
-    private readonly IRequestHandler<Product?, string> _getProductByIdRequest;
-    private readonly IRequestHandler<Product?, (string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
-    private readonly IRequestHandler<Product?, Product> _createProduct;
-    private readonly IRequestHandler<IReadOnlyList<Product>, decimal> _queryByPrice;
+    private readonly IRequestHandler<string, Product?> _getProductByIdRequest;
+    private readonly IRequestHandler<(string Id, decimal NewPrice, DateTime TimeStamp), Product?> _updatePrice;
+    private readonly IRequestHandler<Product, Product?> _createProduct;
+    private readonly IRequestHandler<decimal, IReadOnlyList<Product>> _queryByPrice;
 
     public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
     {

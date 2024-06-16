@@ -9,7 +9,7 @@ namespace Dynatello.Handlers;
 public static class Extensions
 {
     /// Create a <see cref="PutRequestHandler{T}"/>
-    public static IRequestHandler<IReadOnlyList<T>, TArg> ToQueryRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+    public static IRequestHandler<TArg, IReadOnlyList<T>> ToQueryRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
@@ -19,11 +19,11 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new QueryRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        return new QueryRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
     }
 
     /// Create a <see cref="PutRequestHandler{T}"/>
-    public static IRequestHandler<T?, TArg> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+    public static IRequestHandler<TArg, T?> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
@@ -33,11 +33,11 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new UpdateRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        return new UpdateRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
     }
 
     /// Create a <see cref="PutRequestHandler{T}"/>
-    public static IRequestHandler<T?, T> ToPutRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+    public static IRequestHandler<T, T?> ToPutRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
@@ -51,7 +51,7 @@ public static class Extensions
     }
 
     /// Create a <see cref="GetRequestHandler{T, TArg}"/>
-    public static IRequestHandler<T?, TArg> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+    public static IRequestHandler<TArg, T?> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
@@ -61,7 +61,7 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new GetRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        return new GetRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
     }
 
 }

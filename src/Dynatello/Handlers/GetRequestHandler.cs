@@ -6,7 +6,7 @@ namespace Dynatello.Handlers;
 /// <summary>
 /// A request handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
 /// </summary>
-internal sealed class GetRequestHandler<T, TArg> : IRequestHandler<T?, TArg>
+internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
   where T : notnull
   where TArg : notnull
 {
@@ -20,7 +20,7 @@ internal sealed class GetRequestHandler<T, TArg> : IRequestHandler<T?, TArg>
         _createRequest = createRequest;
         _createItem = createItem;
     }
-    
+
     /// <summary>
     /// Sends a request towards DynamoDB and unmarshalls the response.
     /// </summary>

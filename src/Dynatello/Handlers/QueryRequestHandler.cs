@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Handlers;
 
-internal sealed class QueryRequestHandler<T, TArg> : IRequestHandler<IReadOnlyList<T>, TArg>
+internal sealed class QueryRequestHandler<TArg, T> : IRequestHandler<TArg, IReadOnlyList<T>>
 {
     private readonly IAmazonDynamoDB _client;
     private readonly Func<TArg, QueryRequest> _createRequest;

@@ -3,7 +3,7 @@ namespace Dynatello.Handlers;
 /// <summary>
 /// 
 /// </summary>
-public interface IRequestHandler<T, in TArg>
+public interface IRequestHandler<in TArg, T>
 {
     /// <summary>
     /// 
