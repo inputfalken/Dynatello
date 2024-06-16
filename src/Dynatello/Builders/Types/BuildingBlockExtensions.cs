@@ -2,8 +2,14 @@ using DynamoDBGenerator;
 
 namespace Dynatello.Builders.Types;
 
+/// <summary>
+/// 
+/// </summary>
 public static class BuildingBlockExtensions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static KeyConditionedFilterExpression<T, TArg, TReferences, TArgumentReferences> WithFilterExpression<T,
         TArg, TReferences, TArgumentReferences>(
         this KeyConditionExpression<T, TArg, TReferences, TArgumentReferences> source,
@@ -32,6 +38,9 @@ public static class BuildingBlockExtensions
         return new KeyConditionExpression<T, TArg, TReferences, TArgumentReferences>(source, condition);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static ConditionalUpdateExpression<T, TArg, TReferences, TArgumentReferences> WithConditionExpression<T,
         TArg, TReferences, TArgumentReferences>(
         this UpdateExpression<T, TArg, TReferences, TArgumentReferences> source,
@@ -46,6 +55,9 @@ public static class BuildingBlockExtensions
         );
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static UpdateExpression<T, TArg, TReferences, TArgumentReferences> WithUpdateExpression<T, TArg, TReferences,
         TArgumentReferences>(
         this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
@@ -57,6 +69,9 @@ public static class BuildingBlockExtensions
         return new UpdateExpression<T, TArg, TReferences, TArgumentReferences>(in source, in updateExpression);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static ConditionExpression<T, TArg, TReferences, TArgumentReferences> WithConditionExpression<T, TArg,
         TReferences,
         TArgumentReferences>(
@@ -69,6 +84,9 @@ public static class BuildingBlockExtensions
         return new ConditionExpression<T, TArg, TReferences, TArgumentReferences>(in source, in condition);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static ConditionalUpdateExpression<T, TArg, TReferences, TArgumentReferences> WithUpdateExpression<T, TArg,
         TReferences,
         TArgumentReferences>(

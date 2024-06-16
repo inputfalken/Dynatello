@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Dynatello.Handlers;
 using Dynatello.Builders;
+using Dynatello.Builders.Types;
 using NSubstitute;
 using AutoFixture;
 using System.Linq.Expressions;
