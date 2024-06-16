@@ -21,21 +21,20 @@ Add the following NuGet package as a dependency to you project.
 ```csharp
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Attributes;
 using Dynatello;
 using Dynatello.Builders;
 using Dynatello.Handlers;
 using Dynatello.Builders.Types;
 
-ProductRepository productRepository = new ProductRepository("MY_TABLE", new AmazonDynamoDBClient());
+ProductRepository productRepository = new ProductRepository("PRODUCTS", new AmazonDynamoDBClient());
 
 public class ProductRepository
 {
-    private readonly IRequestHandler<Product?, string> _getProductByIdRequest;
-    private readonly IRequestHandler<UpdateItemResponse, (string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
-    private readonly IRequestHandler<Product?, Product> _createProduct;
-    private readonly IRequestHandler<IReadOnlyList<Product>, decimal> _queryByPrice;
+    private readonly IRequestHandler<string, Product?> _getProductByIdRequest;
+    private readonly IRequestHandler<(string Id, decimal NewPrice, DateTime TimeStamp), Product?> _updatePrice;
+    private readonly IRequestHandler<Product, Product?> _createProduct;
+    private readonly IRequestHandler<decimal, IReadOnlyList<Product>> _queryByPrice;
 
     public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
     {
@@ -70,6 +69,12 @@ public class ProductRepository
                   { IndexName = Product.PriceIndex },
                   amazonDynamoDb
                 );
+        
+        // You can also use a RequestBuilder if you want to handle the response.
+        GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
+          .OnTable(tableName)
+          .ToRequestBuilderFactory()
+          .ToGetRequestBuilder();
     }
 
     public Task<IReadOnlyList<Product>> SearchByPrice(decimal price) => _queryByPrice.Send(price, default);
@@ -78,7 +83,7 @@ public class ProductRepository
 
     public Task<Product?> GetById(string id) => _getProductByIdRequest.Send(id, default);
 
-    public Task UpdatePrice(string id, decimal price) => _updatePrice.Send((id, price, DateTime.UtcNow), default);
+    public Task<Product?> UpdatePrice(string id, decimal price) => _updatePrice.Send((id, price, DateTime.UtcNow), default);
 }
 
 // These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
