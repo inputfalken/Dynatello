@@ -4,7 +4,7 @@ using Dynatello.Builders;
 namespace Dynatello;
 
 /// <summary>
-/// 
+/// Contains static extension methods from 
 /// </summary>
 public static class Extensions
 {

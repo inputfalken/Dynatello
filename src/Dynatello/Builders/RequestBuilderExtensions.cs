@@ -5,9 +5,9 @@ using Dynatello.Builders.Types;
 namespace Dynatello.Builders;
 
 /// <summary>
-/// Contains extension methods to create builders.
+/// Contains extension methods to create request builders.
 /// </summary>
-public static class Extensions
+public static class RequestBuilderExtensions
 {
     /// <summary>
     /// 
@@ -126,18 +126,6 @@ public static class Extensions
         );
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public static KeyConditionExpression<T, TArg, TReferences, TArgumentReferences> WithKeyConditionExpression<T, TArg,
-        TReferences, TArgumentReferences>(
-        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
-        Func<TReferences, TArgumentReferences, string> condition)
-        where TReferences : IAttributeExpressionNameTracker
-        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
-    {
-        return new KeyConditionExpression<T, TArg, TReferences, TArgumentReferences>(source, condition);
-    }
 
     /// <summary>
     /// 

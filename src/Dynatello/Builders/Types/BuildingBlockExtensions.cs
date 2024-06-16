@@ -2,7 +2,7 @@ using DynamoDBGenerator;
 
 namespace Dynatello.Builders.Types;
 
-public static class Extensions
+public static class BuildingBlockExtensions
 {
     public static KeyConditionedFilterExpression<T, TArg, TReferences, TArgumentReferences> WithFilterExpression<T,
         TArg, TReferences, TArgumentReferences>(
@@ -17,6 +17,19 @@ public static class Extensions
             source.Condition,
             filter
         );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static KeyConditionExpression<T, TArg, TReferences, TArgumentReferences> WithKeyConditionExpression<T, TArg,
+        TReferences, TArgumentReferences>(
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
+        Func<TReferences, TArgumentReferences, string> condition)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+    {
+        return new KeyConditionExpression<T, TArg, TReferences, TArgumentReferences>(source, condition);
     }
 
     public static ConditionalUpdateExpression<T, TArg, TReferences, TArgumentReferences> WithConditionExpression<T,

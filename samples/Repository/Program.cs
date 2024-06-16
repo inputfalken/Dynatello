@@ -6,7 +6,7 @@ using Dynatello.Builders;
 using Dynatello.Handlers;
 using Dynatello.Builders.Types;
 
-ProductRepository productRepository = new ProductRepository("MY_TABLE", new AmazonDynamoDBClient());
+ProductRepository productRepository = new ProductRepository("PRODUCTS", new AmazonDynamoDBClient());
 
 public class ProductRepository
 {
@@ -48,6 +48,12 @@ public class ProductRepository
                   { IndexName = Product.PriceIndex },
                   amazonDynamoDb
                 );
+        
+        // You can also use a RequestBuilder if you want to handle the response.
+        GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
+          .OnTable(tableName)
+          .ToRequestBuilderFactory()
+          .ToGetRequestBuilder();
     }
 
     public Task<IReadOnlyList<Product>> SearchByPrice(decimal price) => _queryByPrice.Send(price, default);
