@@ -23,7 +23,7 @@ public static class Extensions
     }
 
     /// Create a <see cref="PutRequestHandler{T}"/>
-    public static IRequestHandler<UpdateItemResponse, TArg> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+    public static IRequestHandler<T?, TArg> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
         IAmazonDynamoDB dynamoDb
@@ -33,7 +33,7 @@ public static class Extensions
       where TArg : notnull
       where T : notnull
     {
-        return new UpdateRequestHandler<TArg>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build);
+        return new UpdateRequestHandler<T, TArg>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
     }
 
     /// Create a <see cref="PutRequestHandler{T}"/>

@@ -3,24 +3,29 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Handlers;
 
-internal sealed class UpdateRequestHandler<T> : IRequestHandler<UpdateItemResponse, T>
+internal sealed class UpdateRequestHandler<T, TArg> : IRequestHandler<T?, TArg>
 where T : notnull
 {
     private readonly IAmazonDynamoDB _dynamoDb;
-    private readonly Func<T, UpdateItemRequest> _createRequest;
+    private readonly Func<TArg, UpdateItemRequest> _createRequest;
+    private readonly Func<Dictionary<string, AttributeValue>, T> _unmarshall;
 
-    internal UpdateRequestHandler(IAmazonDynamoDB dynamoDb, Func<T, UpdateItemRequest> createRequest)
+    internal UpdateRequestHandler(IAmazonDynamoDB dynamoDb, Func<TArg, UpdateItemRequest> createRequest, Func<Dictionary<string, AttributeValue>, T> unmarshall)
     {
         _dynamoDb = dynamoDb;
         _createRequest = createRequest;
+        _unmarshall = unmarshall;
     }
 
-    public async Task<UpdateItemResponse> Send(T arg, CancellationToken cancellationToken)
+
+    public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
         var response = await _dynamoDb.UpdateItemAsync(request, cancellationToken);
 
-        return response;
+        return request.ReturnValues.IsValueProvided()
+            ? _unmarshall(response.Attributes)
+            : default;
     }
 }
 

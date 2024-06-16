@@ -1,6 +1,5 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Attributes;
 using Dynatello;
 using Dynatello.Builders;
@@ -12,7 +11,7 @@ ProductRepository productRepository = new ProductRepository("MY_TABLE", new Amaz
 public class ProductRepository
 {
     private readonly IRequestHandler<Product?, string> _getProductByIdRequest;
-    private readonly IRequestHandler<UpdateItemResponse, (string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
+    private readonly IRequestHandler<Product?, (string Id, decimal NewPrice, DateTime TimeStamp)> _updatePrice;
     private readonly IRequestHandler<Product?, Product> _createProduct;
     private readonly IRequestHandler<IReadOnlyList<Product>, decimal> _queryByPrice;
 
@@ -57,7 +56,7 @@ public class ProductRepository
 
     public Task<Product?> GetById(string id) => _getProductByIdRequest.Send(id, default);
 
-    public Task UpdatePrice(string id, decimal price) => _updatePrice.Send((id, price, DateTime.UtcNow), default);
+    public Task<Product?> UpdatePrice(string id, decimal price) => _updatePrice.Send((id, price, DateTime.UtcNow), default);
 }
 
 // These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
