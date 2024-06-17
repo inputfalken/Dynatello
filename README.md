@@ -1,6 +1,6 @@
 # Dynatello
 
-## What does is do?
+## What does it do?
 A DynamoDB source generator that does the heavy lifting when it comes to using the low-level client in DynamoDB.
 
 ## Features
@@ -70,7 +70,7 @@ public class ProductRepository
                   amazonDynamoDb
                 );
         
-        // You can also use a RequestBuilder if you want to handle the response.
+        // You can also use a RequestBuilder if you want to handle the response yourself.
         GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
           .OnTable(tableName)
           .ToRequestBuilderFactory()
