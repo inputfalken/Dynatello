@@ -9,7 +9,7 @@ namespace Dynatello.Builders;
 /// <typeparam name="T">
 /// The type you need to provide in you execution.
 /// </typeparam>
-public readonly record struct GetRequestBuilder<T>
+public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemRequest>
 {
     private readonly Func<T, Dictionary<string, AttributeValue>> _keysSelector;
 
@@ -19,12 +19,6 @@ public readonly record struct GetRequestBuilder<T>
     {
         _keysSelector = keysSelector;
         TableName = tableName;
-    }
-
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public GetRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
     }
 
     /// <inheritdoc cref="GetItemRequest.TableName" />
@@ -61,3 +55,4 @@ public readonly record struct GetRequestBuilder<T>
         return request;
     }
 }
+

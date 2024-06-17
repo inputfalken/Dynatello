@@ -10,7 +10,8 @@ namespace Dynatello.Builders;
 /// <typeparam name="T">
 /// The type you need to provide in you execution.
 /// </typeparam>
-public readonly record struct QueryRequestBuilder<T>
+public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryRequest>
+
 {
     private readonly Func<T, IAttributeExpression> _attributeExpressionSelector;
 
@@ -18,15 +19,6 @@ public readonly record struct QueryRequestBuilder<T>
     {
         _attributeExpressionSelector = attributeExpressionSelector;
         TableName = tableName;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public QueryRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
     }
 
     /// <inheritdoc cref="QueryRequest.TableName" />
@@ -83,7 +75,7 @@ public readonly record struct QueryRequestBuilder<T>
 
         if (Limit is { } limit)
             queryRequest.Limit = limit;
-        else 
+        else
 
         if (IndexName is not null)
             queryRequest.IndexName = IndexName;

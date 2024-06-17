@@ -9,5 +9,4 @@ internal static class Constants
     {
         return new InvalidOperationException(ConstructorException);
     }
-    
 }

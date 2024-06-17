@@ -18,6 +18,7 @@ public partial class ToPutItemRequestTests
     {
         var builder = UserMarshaller
             .OnTable("TABLE")
+            .ToRequestBuilderFactory()
             .ToPutRequestBuilder();
         _fixture.CreateMany<User>().Should().AllSatisfy(user =>
         {
@@ -63,6 +64,7 @@ public partial class ToPutItemRequestTests
     {
         var builder = UserMarshaller
             .OnTable("TABLE")
+            .ToRequestBuilderFactory()
             .WithConditionExpression((x, y) => $"{x.Email} <> {y.Email} AND {x.Firstname} = {y.Firstname}")
             .ToPutRequestBuilder();
         

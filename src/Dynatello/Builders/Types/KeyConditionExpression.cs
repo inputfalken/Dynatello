@@ -5,25 +5,19 @@ namespace Dynatello.Builders.Types;
 /// <summary>
 /// Represents a AttributeExpression with a key condition.
 /// </summary>
-public readonly struct KeyConditionExpression<T, TArg, TReferences, TArgumentReferences>
+public class KeyConditionExpression<T, TArg, TReferences, TArgumentReferences>
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
-    internal readonly TableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess;
-
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public KeyConditionExpression()
-    {
-        throw Constants.InvalidConstructor();
-    }
+    internal readonly IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> Builder;
 
     internal KeyConditionExpression(
-        in TableAccess<T, TArg, TReferences, TArgumentReferences> tableAccess,
+        in IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> condition
     )
     {
-        TableAccess = tableAccess;
+        Builder = tableAccess;
         Condition = condition;
     }
 }

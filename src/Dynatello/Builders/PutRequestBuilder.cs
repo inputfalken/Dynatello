@@ -10,7 +10,7 @@ namespace Dynatello.Builders;
 /// <typeparam name="T">
 /// The type you need to provide in you execution.
 /// </typeparam>
-public readonly record struct PutRequestBuilder<T>
+public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemRequest>
 {
     private readonly Func<T, IAttributeExpression>? _attributeExpressionSelector;
     private readonly Func<T, Dictionary<string, AttributeValue>> _marshall;
@@ -27,12 +27,6 @@ public readonly record struct PutRequestBuilder<T>
         _attributeExpressionSelector = attributeExpressionSelector;
         _marshall = marshall;
         _tableName = tableName;
-    }
-
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public PutRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
     }
 
     /// <inheritdoc cref="PutItemRequest.TableName" />
