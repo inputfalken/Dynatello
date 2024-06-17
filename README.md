@@ -8,6 +8,7 @@ A DynamoDB source generator that does the heavy lifting when it comes to using t
 * Builder patterns to create request builders.
 * Request handlers that perform the DynamoDB request and handles the response.
     * TODO add `request` & `response` middlewares.
+    * TODO add optional error handlers.
 
 ## Installation
 
