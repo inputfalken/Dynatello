@@ -5,19 +5,13 @@ namespace Dynatello.Builders.Types;
 /// <summary>
 /// Represents a AttributeExpression with both a key condition and a filter.
 /// </summary>
-public readonly struct KeyConditionedFilterExpression<T, TArg, TReferences, TArgumentReferences>
+public class KeyConditionedFilterExpression<T, TArg, TReferences, TArgumentReferences>
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
     internal readonly Func<TReferences, TArgumentReferences, string> Condition;
     internal readonly Func<TReferences, TArgumentReferences, string> Filter;
     internal readonly IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> Builder;
-
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public KeyConditionedFilterExpression()
-    {
-        throw Constants.InvalidConstructor();
-    }
 
     internal KeyConditionedFilterExpression(
         in IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> tableAccess,
