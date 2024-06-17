@@ -16,14 +16,7 @@ public readonly record struct UpdateRequestBuilder<T> : IRequestBuilder<T, Updat
     private readonly Func<T, IAttributeExpression> _attributeExpressionSelector;
     private readonly IDynamoDBKeyMarshaller _keyMarshaller;
     private readonly Func<IDynamoDBKeyMarshaller, T, Dictionary<string, AttributeValue>> _keySelector;
-
     private readonly string _tableName;
-
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public UpdateRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
-    }
 
     internal UpdateRequestBuilder(
         Func<T, IAttributeExpression> attributeExpressionSelector,

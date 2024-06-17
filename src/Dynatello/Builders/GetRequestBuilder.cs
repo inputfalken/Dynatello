@@ -21,12 +21,6 @@ public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemR
         TableName = tableName;
     }
 
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public GetRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
-    }
-
     /// <inheritdoc cref="GetItemRequest.TableName" />
     public string TableName { get; init; }
 

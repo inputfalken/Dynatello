@@ -49,7 +49,7 @@ public class ProductRepository
                   amazonDynamoDb
                 );
         
-        // You can also use a RequestBuilder if you want to handle the response.
+        // You can also use a RequestBuilder if you want to handle the response yourself.
         GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
           .OnTable(tableName)
           .ToRequestBuilderFactory()

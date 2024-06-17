@@ -21,15 +21,6 @@ public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryR
         TableName = tableName;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public QueryRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
-    }
-
     /// <inheritdoc cref="QueryRequest.TableName" />
     public string TableName { get; init; }
 

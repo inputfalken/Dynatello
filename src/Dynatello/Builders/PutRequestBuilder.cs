@@ -29,12 +29,6 @@ public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemR
         _tableName = tableName;
     }
 
-    [Obsolete(Constants.ObsoleteConstructorMessage, true)]
-    public PutRequestBuilder()
-    {
-        throw Constants.InvalidConstructor();
-    }
-
     /// <inheritdoc cref="PutItemRequest.TableName" />
     public string TableName
     {
