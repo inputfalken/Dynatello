@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator;
 using Dynatello.Builders;
+using Dynatello.Pipelines;
 
 namespace Dynatello.Handlers;
 
@@ -72,7 +73,12 @@ public static class TableAccessExtensions
       where TArg : notnull
       where T : notnull
     {
-        return new GetRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        return new GetRequestHandler<TArg, T>(
+            dynamoDb,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall,
+            Enumerable.Empty<IRequestPipeLine>()
+        );
     }
 
 }

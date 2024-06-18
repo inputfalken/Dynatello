@@ -1,6 +1,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Exceptions;
+using Dynatello.Pipelines;
 
 namespace Dynatello.Handlers;
 /// <summary>
@@ -13,12 +14,19 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     private readonly IAmazonDynamoDB _client;
     private readonly Func<TArg, GetItemRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _createItem;
+    private readonly IEnumerable<IRequestPipeLine> _requestsPipelines;
 
-    internal GetRequestHandler(IAmazonDynamoDB client, Func<TArg, GetItemRequest> createRequest, Func<Dictionary<string, AttributeValue>, T> createItem)
+    internal GetRequestHandler(
+        IAmazonDynamoDB client,
+        Func<TArg, GetItemRequest> createRequest,
+        Func<Dictionary<string, AttributeValue>, T> createItem,
+        IEnumerable<IRequestPipeLine> requestsPipelines
+    )
     {
         _client = client;
         _createRequest = createRequest;
         _createItem = createItem;
+        _requestsPipelines = requestsPipelines;
     }
 
     /// <summary>
@@ -33,6 +41,9 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
+
+        if (_requestsPipelines.IsEmpty() is false)
+            await _requestsPipelines.Bind(new RequestContext(request));
 
         var response = await _client.GetItemAsync(request, cancellationToken);
 
