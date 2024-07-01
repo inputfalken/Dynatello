@@ -81,4 +81,26 @@ public static class TableAccessExtensions
         );
     }
 
+    /// <summary>
+    /// Creates a <see cref="GetItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, T?> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
+        IAmazonDynamoDB dynamoDb,
+        IEnumerable<IRequestPipeLine> pipeLines
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new GetRequestHandler<TArg, T>(
+            dynamoDb,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall,
+            pipeLines
+        );
+    }
+
 }
