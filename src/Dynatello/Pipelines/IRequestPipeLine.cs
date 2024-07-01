@@ -1,20 +1,26 @@
-
 using Amazon.DynamoDBv2;
+using Amazon.Runtime;
 
 namespace Dynatello.Pipelines;
 
+
 public interface IRequestPipeLine
 {
-    public Task Invoke(RequestContext requestContext, Func<RequestContext, Task> continuation);
+    public Task<AmazonWebServiceResponse> Invoke(RequestContext requestContext, Func<RequestContext, Task<AmazonWebServiceResponse>> continuation);
 }
 
 public readonly record struct RequestContext(AmazonDynamoDBRequest Request);
 
 internal static class RequestPipelineExtensons
 {
-    internal static Task Bind(this IEnumerable<IRequestPipeLine> pipelines, RequestContext context)
+    internal static Func<RequestContext, Task<AmazonWebServiceResponse>> Merge(
+        this IEnumerable<IRequestPipeLine> funcs,
+        Func<RequestContext, Task<AmazonWebServiceResponse>> request
+      )
     {
-        return Task.CompletedTask;
+        return funcs
+          .Reverse()
+          .Aggregate(request, (next, pipeline) => x => pipeline.Invoke(x, y => next(y)));
     }
 
     internal static bool IsEmpty<T>(this IEnumerable<T> pipelines)

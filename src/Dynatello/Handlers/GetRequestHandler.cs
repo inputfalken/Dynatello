@@ -43,13 +43,14 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
         var request = _createRequest(arg);
 
         if (_requestsPipelines.IsEmpty() is false)
-            await _requestsPipelines.Bind(new RequestContext(request));
+            return HandleResponse(
+                (GetItemResponse)await _requestsPipelines.Merge(async x => await _client.GetItemAsync((GetItemRequest)x.Request, cancellationToken))
+                (new RequestContext(request)));
 
-        var response = await _client.GetItemAsync(request, cancellationToken);
-
-        return response.IsItemSet
-          ? _createItem(response.Item)
-          : default;
+        return HandleResponse(await _client.GetItemAsync(request, cancellationToken));
     }
 
+    private T? HandleResponse(GetItemResponse response) => response.IsItemSet
+          ? _createItem(response.Item)
+          : default;
 }
