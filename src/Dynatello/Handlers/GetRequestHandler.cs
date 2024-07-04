@@ -42,23 +42,11 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     {
         var request = _createRequest(arg);
 
-        if (_requestsPipelines.IsEmpty() is false)
-        {
-            var requestContext = new RequestContext<GetItemRequest>(request, cancellationToken);
-            var requestPipeLine = _requestsPipelines.Compose(async x =>
-                object.ReferenceEquals(x, requestContext) is false
-                  ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
-                  : await _client.GetItemAsync((GetItemRequest)x.Request, cancellationToken)
-            );
-            var response = await requestPipeLine(requestContext);
+        var response = await request
+          .InvokeRequest<GetItemRequest, GetItemResponse>(_requestsPipelines, async (x, y) => await _client.GetItemAsync(x, y), cancellationToken);
 
-            return HandleResponse((GetItemResponse)response);
-        }
-
-        return HandleResponse(await _client.GetItemAsync(request, cancellationToken));
-    }
-
-    private T? HandleResponse(GetItemResponse response) => response.IsItemSet
+        return response.IsItemSet
           ? _createItem(response.Item)
           : default;
+    }
 }
