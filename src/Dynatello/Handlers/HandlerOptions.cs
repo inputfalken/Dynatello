@@ -6,16 +6,15 @@ namespace Dynatello.Handlers;
 
 public sealed class HandlerOptions
 {
-    private AmazonDynamoDBClient defaultClient;
+    private AmazonDynamoDBClient? defaultClient;
     private IAmazonDynamoDB? client;
-    private IAmazonDynamoDB DefaultClient => defaultClient ??= new AmazonDynamoDBClient();
+
 
     public IAmazonDynamoDB AmazonDynamoDB
     {
         get
         {
-
-            return client ?? DefaultClient;
+            return client ??= defaultClient ??= new AmazonDynamoDBClient();
         }
         set { client = value; }
     }
