@@ -44,7 +44,13 @@ public class GetRequestHandlerTests
         Assert.All(pipelines, x => Assert.Null(x.TimeStamp));
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB, pipelines)
+          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), x =>
+          {
+              x.RequestsPipelines.Add(pipelines[0]);
+              x.RequestsPipelines.Add(pipelines[1]);
+              x.RequestsPipelines.Add(pipelines[2]);
+              x.AmazonDynamoDB = amazonDynamoDB;
+          })
           .Send(expected.Id, default);
         Assert.Equal(expected, actual);
         Assert.All(pipelines, x => Assert.NotNull(x.TimeStamp));
@@ -74,7 +80,7 @@ public class GetRequestHandlerTests
 
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB)
+          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send(expected.Id, default);
 
         Assert.Equal(expected, actual);
@@ -95,7 +101,7 @@ public class GetRequestHandlerTests
 
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB)
+          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send(expected.Id, default);
 
         Assert.Equal((Cat)null!, actual);

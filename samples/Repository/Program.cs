@@ -19,7 +19,7 @@ public class ProductRepository
     {
         _getProductByIdRequest = Product.GetById
             .OnTable(tableName)
-            .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDb);
+            .ToGetRequestHandler(x => x.ToGetRequestBuilder(), x => x.AmazonDynamoDB = amazonDynamoDb);
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
@@ -48,7 +48,7 @@ public class ProductRepository
                   { IndexName = Product.PriceIndex },
                   amazonDynamoDb
                 );
-        
+
         // You can also use a RequestBuilder if you want to handle the response yourself.
         GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
           .OnTable(tableName)

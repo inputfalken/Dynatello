@@ -57,12 +57,9 @@ internal static class RequestPipelineExtensons
             var requestContext = new RequestContext<TRequest>(request, cancellationToken);
             var requestPipeLine = pipelines.Compose(async x =>
             {
-
-
                 return object.ReferenceEquals(x, requestContext) is false
                                   ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
                                   : await invocation((TRequest)x.Request, dynamoDb, cancellationToken);
-
             });
 
             return (TResponse)(await requestPipeLine(requestContext));

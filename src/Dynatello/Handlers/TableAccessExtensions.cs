@@ -66,40 +66,40 @@ public static class TableAccessExtensions
     public static IRequestHandler<TArg, T?> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
+        var handlerOptions = new HandlerOptions();
+        configure(handlerOptions);
         return new GetRequestHandler<TArg, T>(
-            dynamoDb,
+            handlerOptions,
             requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
-            item.Marshaller.Unmarshall,
-            Enumerable.Empty<IRequestPipeLine>()
+            item.Marshaller.Unmarshall
         );
     }
+    
 
     /// <summary>
     /// Creates a <see cref="GetItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
     /// </summary>
     public static IRequestHandler<TArg, T?> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb,
-        IEnumerable<IRequestPipeLine> pipeLines
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
+        var handlerOptions = new HandlerOptions();
         return new GetRequestHandler<TArg, T>(
-            dynamoDb,
+            handlerOptions,
             requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
-            item.Marshaller.Unmarshall,
-            pipeLines
+            item.Marshaller.Unmarshall
         );
     }
 

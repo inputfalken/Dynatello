@@ -17,16 +17,15 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     private readonly IEnumerable<IRequestPipeLine> _requestsPipelines;
 
     internal GetRequestHandler(
-        IAmazonDynamoDB client,
+        HandlerOptions handlerOptions,
         Func<TArg, GetItemRequest> createRequest,
-        Func<Dictionary<string, AttributeValue>, T> createItem,
-        IEnumerable<IRequestPipeLine> requestsPipelines
+        Func<Dictionary<string, AttributeValue>, T> createItem
     )
     {
-        _client = client;
+        _client = handlerOptions.AmazonDynamoDB;
         _createRequest = createRequest;
         _createItem = createItem;
-        _requestsPipelines = requestsPipelines;
+        _requestsPipelines = handlerOptions.RequestsPipelines;
     }
 
     /// <summary>
