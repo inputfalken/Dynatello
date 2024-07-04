@@ -45,7 +45,7 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
         if (_requestsPipelines.IsEmpty() is false)
         {
             var requestContext = new RequestContext<GetItemRequest>(request, cancellationToken);
-            var requestPipeLine = _requestsPipelines.Merge(async x =>
+            var requestPipeLine = _requestsPipelines.Compose(async x =>
                 object.ReferenceEquals(x, requestContext) is false
                   ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
                   : await _client.GetItemAsync((GetItemRequest)x.Request, cancellationToken)

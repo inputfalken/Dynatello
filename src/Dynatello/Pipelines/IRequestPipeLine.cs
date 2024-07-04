@@ -32,7 +32,7 @@ public sealed record RequestContext<TRequest> : RequestContext where TRequest : 
 
 internal static class RequestPipelineExtensons
 {
-    internal static Func<RequestContext, Task<AmazonWebServiceResponse>> Merge(
+    internal static Func<RequestContext, Task<AmazonWebServiceResponse>> Compose(
         this IEnumerable<IRequestPipeLine> funcs,
         Func<RequestContext, Task<AmazonWebServiceResponse>> request
       )
