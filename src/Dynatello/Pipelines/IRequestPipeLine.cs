@@ -32,22 +32,24 @@ public sealed record RequestContext<TRequest> : RequestContext where TRequest : 
 
 internal static class RequestPipelineExtensons
 {
-    internal static Task<TResponse> Send<TRequest, TResponse>(
+    internal static Task<TResponse> SendRequest<TRequest, TResponse>(
         this TRequest request,
         IEnumerable<IRequestPipeLine> pipelines,
-        Func<TRequest, CancellationToken, Task<TResponse>> invocation,
+        Func<TRequest, IAmazonDynamoDB, CancellationToken, Task<TResponse>> invocation,
+        IAmazonDynamoDB dynamoDb,
         CancellationToken cancellationToken
         ) where TRequest : AmazonDynamoDBRequest where TResponse : AmazonWebServiceResponse
     {
 
         return pipelines.IsEmpty()
-          ? WithPipeline(request, pipelines, invocation, cancellationToken)
-          : invocation(request, cancellationToken);
+          ? WithPipeline(request, pipelines, dynamoDb, invocation, cancellationToken)
+          : invocation(request, dynamoDb, cancellationToken);
 
         static async Task<TResponse> WithPipeline(
             TRequest request,
             IEnumerable<IRequestPipeLine> pipelines,
-            Func<TRequest, CancellationToken, Task<TResponse>> invocation,
+            IAmazonDynamoDB dynamoDb,
+            Func<TRequest, IAmazonDynamoDB, CancellationToken, Task<TResponse>> invocation,
             CancellationToken cancellationToken
         )
         {
@@ -55,9 +57,11 @@ internal static class RequestPipelineExtensons
             var requestContext = new RequestContext<TRequest>(request, cancellationToken);
             var requestPipeLine = pipelines.Compose(async x =>
             {
+
+
                 return object.ReferenceEquals(x, requestContext) is false
                                   ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
-                                  : await invocation((TRequest)x.Request, cancellationToken);
+                                  : await invocation((TRequest)x.Request, dynamoDb, cancellationToken);
 
             });
 

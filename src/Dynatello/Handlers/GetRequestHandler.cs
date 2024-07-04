@@ -41,8 +41,8 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var response = await _createRequest(arg)
-          .SendRequest<GetItemRequest, GetItemResponse>(_requestsPipelines, async (x, y) => await _client.GetItemAsync(x, y), cancellationToken);
-        
+          .SendRequest<GetItemRequest, GetItemResponse>(_requestsPipelines, async (x, y, z) => await y.GetItemAsync(x, z), _client, cancellationToken);
+
         return response.IsItemSet
           ? _createItem(response.Item)
           : default;
