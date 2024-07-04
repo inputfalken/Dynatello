@@ -31,10 +31,13 @@ public class GetRequestHandlerTests
         };
         var amazonDynamoDB = Substitute.For<IAmazonDynamoDB>();
 
-
         amazonDynamoDB
           .GetItemAsync(Arg.Any<GetItemRequest>())
-          .Returns(response);
+          .Returns(x =>
+          {
+              Thread.Sleep(200);
+              return response;
+          });
 
         var pipelines = new TestPipeLine[] { new TestPipeLine(), new TestPipeLine(), new TestPipeLine() };
 
@@ -46,7 +49,12 @@ public class GetRequestHandlerTests
         Assert.Equal(expected, actual);
         Assert.All(pipelines, x => Assert.NotNull(x.TimeStamp));
         var pipeLineTimestamps = pipelines.Select(x => x.TimeStamp!.Value).ToArray();
-        Assert.DoesNotContain(false, pipeLineTimestamps.Zip(pipeLineTimestamps.Skip(1), (x, y) => x < y));
+        Assert.DoesNotContain(false, pipeLineTimestamps.Zip(pipeLineTimestamps.Skip(1), (x, y) =>
+              (x < y)
+              &&
+              (y - x) < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
+              )
+            );
     }
 
     [Fact]
