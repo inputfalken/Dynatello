@@ -20,7 +20,7 @@ public class GetRequestHandlerTests
         }
     }
     [Fact]
-    public async Task Send_SuccessMock_ShouldReturnItem2()
+    public async Task Send_SuccessMockWithMockedRequestPipeline_ShouldReturnItemAndExecutePipeLine()
     {
         var expected = Cat.Fixture.Create<Cat>();
         var response = new GetItemResponse
