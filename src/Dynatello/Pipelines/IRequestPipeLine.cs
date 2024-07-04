@@ -32,31 +32,37 @@ public sealed record RequestContext<TRequest> : RequestContext where TRequest : 
 
 internal static class RequestPipelineExtensons
 {
-    internal async static Task<TResponse> InvokeRequest<TRequest, TResponse>(
+    internal static Task<TResponse> Send<TRequest, TResponse>(
         this TRequest request,
         IEnumerable<IRequestPipeLine> pipelines,
-        Func<TRequest, CancellationToken, Task<AmazonWebServiceResponse>> invocation,
+        Func<TRequest, CancellationToken, Task<TResponse>> invocation,
         CancellationToken cancellationToken
         ) where TRequest : AmazonDynamoDBRequest where TResponse : AmazonWebServiceResponse
     {
 
-        if (pipelines.IsEmpty() is false)
+        return pipelines.IsEmpty()
+          ? WithPipeline(request, pipelines, invocation, cancellationToken)
+          : invocation(request, cancellationToken);
+
+        static async Task<TResponse> WithPipeline(
+            TRequest request,
+            IEnumerable<IRequestPipeLine> pipelines,
+            Func<TRequest, CancellationToken, Task<TResponse>> invocation,
+            CancellationToken cancellationToken
+        )
         {
+
             var requestContext = new RequestContext<TRequest>(request, cancellationToken);
-            var requestPipeLine = pipelines.Compose(x =>
-                object.ReferenceEquals(x, requestContext) is false
-                  ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
-                  : invocation((TRequest)x.Request, cancellationToken)
-            );
+            var requestPipeLine = pipelines.Compose(async x =>
+            {
+                return object.ReferenceEquals(x, requestContext) is false
+                                  ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
+                                  : await invocation((TRequest)x.Request, cancellationToken);
+
+            });
 
             return (TResponse)(await requestPipeLine(requestContext));
-
         }
-        else
-        {
-            return (TResponse)(await invocation(request, cancellationToken));
-        }
-
     }
 
     private static Func<RequestContext, Task<AmazonWebServiceResponse>> Compose(
@@ -70,7 +76,7 @@ internal static class RequestPipelineExtensons
           .Aggregate(request, (execution, continuation) => requestContext => continuation(requestContext, execution));
     }
 
-    internal static bool IsEmpty<T>(this IEnumerable<T> pipelines)
+    private static bool IsEmpty<T>(this IEnumerable<T> pipelines)
     {
         return pipelines switch
         {
