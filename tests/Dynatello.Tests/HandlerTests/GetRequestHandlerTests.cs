@@ -10,6 +10,15 @@ using NSubstitute;
 namespace Dynatello.Tests.HandlerTests;
 public class GetRequestHandlerTests
 {
+    private class TestPipeLine : IRequestPipeLine
+    {
+        public DateTime? TimeStamp = null;
+        public Task<AmazonWebServiceResponse> Invoke(RequestContext requestContext, Func<RequestContext, Task<AmazonWebServiceResponse>> continuation)
+        {
+            TimeStamp = DateTime.Now;
+            return continuation(requestContext);
+        }
+    }
     [Fact]
     public async Task Send_SuccessMock_ShouldReturnItem2()
     {
@@ -22,21 +31,22 @@ public class GetRequestHandlerTests
         };
         var amazonDynamoDB = Substitute.For<IAmazonDynamoDB>();
 
-        var pipelines = Substitute.For<IRequestPipeLine>();
-        pipelines
-          .Invoke(Arg.Any<RequestContext>(), x => Task.FromResult<AmazonWebServiceResponse>(response))
-          .Returns(response);
 
         amazonDynamoDB
           .GetItemAsync(Arg.Any<GetItemRequest>())
           .Returns(response);
 
+        var pipelines = new TestPipeLine[] { new TestPipeLine(), new TestPipeLine(), new TestPipeLine() };
+
+        Assert.All(pipelines, x => Assert.Null(x.TimeStamp));
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB, new[] { pipelines })
+          .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDB, pipelines)
           .Send(expected.Id, default);
-
         Assert.Equal(expected, actual);
+        Assert.All(pipelines, x => Assert.NotNull(x.TimeStamp));
+        var pipeLineTimestamps = pipelines.Select(x => x.TimeStamp!.Value).ToArray();
+        Assert.DoesNotContain(false, pipeLineTimestamps.Zip(pipeLineTimestamps.Skip(1), (x, y) => x < y));
     }
 
     [Fact]

@@ -44,10 +44,10 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
 
         if (_requestsPipelines.IsEmpty() is false)
         {
-            var y = _requestsPipelines.Merge(async x => await _client.GetItemAsync((GetItemRequest)x.Request, cancellationToken));
-            var execution = await y(new RequestContext(request, cancellationToken));
+            var requestPipeLine = _requestsPipelines.Merge(async x => await _client.GetItemAsync((GetItemRequest)x.Request, cancellationToken));
+            var response = await requestPipeLine(new RequestContext(request, cancellationToken));
             
-            return HandleResponse((GetItemResponse)execution);
+            return HandleResponse((GetItemResponse)response);
         }
 
         return HandleResponse(await _client.GetItemAsync(request, cancellationToken));
