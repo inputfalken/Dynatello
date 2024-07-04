@@ -33,14 +33,14 @@ public sealed record RequestContext<TRequest> : RequestContext where TRequest : 
 internal static class RequestPipelineExtensons
 {
     internal static Func<RequestContext, Task<AmazonWebServiceResponse>> Compose(
-        this IEnumerable<IRequestPipeLine> funcs,
+        this IEnumerable<IRequestPipeLine> pipelines,
         Func<RequestContext, Task<AmazonWebServiceResponse>> request
       )
     {
-        return funcs
+        return pipelines
           .Select<IRequestPipeLine, Func<RequestContext, Func<RequestContext, Task<AmazonWebServiceResponse>>, Task<AmazonWebServiceResponse>>>(x => x.Invoke)
           .Reverse()
-          .Aggregate(request, (next, pipeline) => x => pipeline(x, y => next(y)));
+          .Aggregate(request, (execution, continuation) => requestContext => continuation(requestContext, execution));
     }
 
     internal static bool IsEmpty<T>(this IEnumerable<T> pipelines)
