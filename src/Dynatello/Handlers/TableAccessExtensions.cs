@@ -49,15 +49,40 @@ public static class TableAccessExtensions
     /// </summary>
     public static IRequestHandler<T, T?> ToPutRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
-        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new PutRequestHandler<T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        return new PutRequestHandler<T>(
+            new HandlerOptions(),
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+
+    /// <summary>
+    /// Creates a <see cref="PutItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<T, T?> ToPutRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
+        Action<HandlerOptions> configure
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        var options = new HandlerOptions();
+        configure(options);
+        return new PutRequestHandler<T>(
+            options,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
     }
 
     /// <summary>
@@ -81,7 +106,7 @@ public static class TableAccessExtensions
             item.Marshaller.Unmarshall
         );
     }
-    
+
 
     /// <summary>
     /// Creates a <see cref="GetItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
@@ -95,9 +120,8 @@ public static class TableAccessExtensions
       where TArg : notnull
       where T : notnull
     {
-        var handlerOptions = new HandlerOptions();
         return new GetRequestHandler<TArg, T>(
-            handlerOptions,
+            new HandlerOptions(),
             requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
             item.Marshaller.Unmarshall
         );

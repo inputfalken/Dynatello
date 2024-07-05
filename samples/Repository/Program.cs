@@ -36,7 +36,7 @@ public class ProductRepository
               x => x
                 .WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
                 .ToPutRequestBuilder(),
-              amazonDynamoDb
+              x => x.AmazonDynamoDB = amazonDynamoDb
             );
 
         _queryByPrice = Product.QueryByPrice
