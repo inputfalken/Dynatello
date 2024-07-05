@@ -3,7 +3,6 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator;
 using Dynatello.Builders;
-using Dynatello.Pipelines;
 
 namespace Dynatello.Handlers;
 
@@ -18,14 +17,30 @@ public static class TableAccessExtensions
     public static IRequestHandler<TArg, IReadOnlyList<T>> ToQueryRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new QueryRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        var options = new HandlerOptions();
+        configure(options);
+        return new QueryRequestHandler<TArg, T>(options, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+    }
+    /// <summary>
+    /// Creates a <see cref="QueryRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, IReadOnlyList<T>> ToQueryRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new QueryRequestHandler<TArg, T>(new HandlerOptions(), requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
     }
 
     /// <summary>
@@ -43,7 +58,7 @@ public static class TableAccessExtensions
     {
         var options = new HandlerOptions();
         configure(options);
-        
+
         return new UpdateRequestHandler<TArg, T>(
             options,
             requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
