@@ -29,7 +29,7 @@ public class PutRequestHandlerTests
 
         var actual = await Cat.Put
           .OnTable("TABLE")
-          .ToPutRequestHandler(x => x.ToPutRequestBuilder() with { ReturnValues = new ReturnValue(returnValue) }, amazonDynamoDB)
+          .ToPutRequestHandler(x => x.ToPutRequestBuilder() with { ReturnValues = new ReturnValue(returnValue) }, x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send(expected, default);
 
         Assert.Equal(expected, actual);
@@ -52,7 +52,7 @@ public class PutRequestHandlerTests
 
         var actual = await Cat.Put
           .OnTable("TABLE")
-          .ToPutRequestHandler(x => x.ToPutRequestBuilder() with { ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null }, amazonDynamoDB)
+          .ToPutRequestHandler(x => x.ToPutRequestBuilder() with { ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null }, x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send(expected, default);
 
         Assert.Equal(actual, null);

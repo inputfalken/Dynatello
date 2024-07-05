@@ -7,7 +7,7 @@ A DynamoDB source generator that does the heavy lifting when it comes to using t
 
 * Builder patterns to create request builders.
 * Request handlers that perform the DynamoDB request and handles the response.
-    * TODO add `request` & `response` middlewares.
+    * TODO add `response` middlewares.
     * TODO add optional error handlers.
 
 ## Installation
@@ -29,6 +29,9 @@ using Dynatello;
 using Dynatello.Builders;
 using Dynatello.Handlers;
 using Dynatello.Builders.Types;
+using Dynatello.Pipelines;
+using Amazon.Runtime;
+using System.Diagnostics;
 
 ProductRepository productRepository = new ProductRepository("PRODUCTS", new AmazonDynamoDBClient());
 
@@ -39,11 +42,32 @@ public class ProductRepository
     private readonly IRequestHandler<Product, Product?> _createProduct;
     private readonly IRequestHandler<decimal, IReadOnlyList<Product>> _queryByPrice;
 
+    private class RequestLogger : IRequestPipeLine
+    {
+        public async Task<AmazonWebServiceResponse> Invoke(RequestContext requestContext, Func<RequestContext, Task<AmazonWebServiceResponse>> continuation)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("Starting request");
+            var request = await continuation(requestContext);
+            Console.WriteLine($"Request finished after '{stopwatch.Elapsed}'.");
+            return request;
+        }
+    }
+
     public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
     {
+        var requestLogger = new RequestLogger();
         _getProductByIdRequest = Product.GetById
             .OnTable(tableName)
-            .ToGetRequestHandler(x => x.ToGetRequestBuilder(), amazonDynamoDb);
+            .ToGetRequestHandler(
+              x => x.ToGetRequestBuilder(),
+              x =>
+              {
+                  x.AmazonDynamoDB = amazonDynamoDb;
+                  // All handlers comes with the ability to add middlewares that will be executed.
+                  x.RequestsPipelines.Add(requestLogger);
+              }
+            );
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
@@ -51,7 +75,7 @@ public class ProductRepository
               x => x
                   .WithUpdateExpression((db, arg) => $"SET {db.Price} = {arg.NewPrice}, {db.Metadata.ModifiedAt} = {arg.TimeStamp}") // Specify the update operation
                   .ToUpdateItemRequestBuilder(((marshaller, arg) => marshaller.PartitionKey(arg.Id))),
-              amazonDynamoDb
+              x => x.AmazonDynamoDB = amazonDynamoDb
             );
 
         _createProduct = Product.Put
@@ -60,19 +84,19 @@ public class ProductRepository
               x => x
                 .WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
                 .ToPutRequestBuilder(),
-              amazonDynamoDb
+              x => x.AmazonDynamoDB = amazonDynamoDb
             );
 
         _queryByPrice = Product.QueryByPrice
-                .OnTable(tableName)
-                .ToQueryRequestHandler(
-                  x => x
-                    .WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
-                    .ToQueryRequestBuilder() with
-                  { IndexName = Product.PriceIndex },
-                  amazonDynamoDb
-                );
-        
+            .OnTable(tableName)
+            .ToQueryRequestHandler(
+              x => x
+                .WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
+                .ToQueryRequestBuilder() with
+              { IndexName = Product.PriceIndex },
+              x => x.AmazonDynamoDB = amazonDynamoDb
+            );
+
         // You can also use a RequestBuilder if you want to handle the response yourself.
         GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
           .OnTable(tableName)

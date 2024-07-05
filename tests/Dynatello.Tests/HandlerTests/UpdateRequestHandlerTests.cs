@@ -34,7 +34,7 @@ public class UpdateRequestHandlerTests
           .ToUpdateRequestHandler(x => x
               .WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
               .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
-          { ReturnValues = new ReturnValue(returnValue) }, amazonDynamoDB
+          { ReturnValues = new ReturnValue(returnValue) }, x => x.AmazonDynamoDB = amazonDynamoDB
           )
           .Send((expected.Id, expected.HomeId), default);
 
@@ -61,7 +61,7 @@ public class UpdateRequestHandlerTests
           .ToUpdateRequestHandler(x => x
               .WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
               .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
-          { ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null }, amazonDynamoDB
+          { ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null }, x => x.AmazonDynamoDB = amazonDynamoDB
           )
           .Send((Guid.NewGuid(), Guid.NewGuid()), default);
 

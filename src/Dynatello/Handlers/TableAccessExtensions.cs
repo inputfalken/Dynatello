@@ -17,14 +17,30 @@ public static class TableAccessExtensions
     public static IRequestHandler<TArg, IReadOnlyList<T>> ToQueryRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new QueryRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        var options = new HandlerOptions();
+        configure(options);
+        return new QueryRequestHandler<TArg, T>(options, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+    }
+    /// <summary>
+    /// Creates a <see cref="QueryRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, IReadOnlyList<T>> ToQueryRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, QueryRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new QueryRequestHandler<TArg, T>(new HandlerOptions(), requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
     }
 
     /// <summary>
@@ -33,14 +49,58 @@ public static class TableAccessExtensions
     public static IRequestHandler<TArg, T?> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new UpdateRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        var options = new HandlerOptions();
+        configure(options);
+
+        return new UpdateRequestHandler<TArg, T>(
+            options,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+    /// <summary>
+    /// Creates a <see cref="UpdateItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, T?> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new UpdateRequestHandler<TArg, T>(
+            new HandlerOptions(),
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+
+    /// <summary>
+    /// Creates a <see cref="PutItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<T, T?> ToPutRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new PutRequestHandler<T>(
+            new HandlerOptions(),
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
     }
 
     /// <summary>
@@ -49,14 +109,20 @@ public static class TableAccessExtensions
     public static IRequestHandler<T, T?> ToPutRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<T, PutItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new PutRequestHandler<T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        var options = new HandlerOptions();
+        configure(options);
+        return new PutRequestHandler<T>(
+            options,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
     }
 
     /// <summary>
@@ -65,14 +131,40 @@ public static class TableAccessExtensions
     public static IRequestHandler<TArg, T?> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new GetRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        var handlerOptions = new HandlerOptions();
+        configure(handlerOptions);
+        return new GetRequestHandler<TArg, T>(
+            handlerOptions,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+
+
+    /// <summary>
+    /// Creates a <see cref="GetItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, T?> ToGetRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, GetItemRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new GetRequestHandler<TArg, T>(
+            new HandlerOptions(),
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
     }
 
 }

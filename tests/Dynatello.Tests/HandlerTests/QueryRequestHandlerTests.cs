@@ -5,7 +5,6 @@ using Dynatello.Builders;
 using Dynatello.Builders.Types;
 using NSubstitute;
 using AutoFixture;
-using System.Linq.Expressions;
 
 namespace Dynatello.Tests.HandlerTests;
 public class QueryRequestHandlerTests
@@ -29,7 +28,7 @@ public class QueryRequestHandlerTests
           .ToQueryRequestHandler(x => x
               .WithKeyConditionExpression(((x, y) => $"{x.Id} = {y.Id}"))
               .ToQueryRequestBuilder() with
-          { IndexName = "INDEX" }, amazonDynamoDB)
+          { IndexName = "INDEX" }, x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send((Guid.NewGuid(), 2), default);
 
         Assert.Equal(expected, actual);
@@ -78,49 +77,9 @@ public class QueryRequestHandlerTests
           .ToQueryRequestHandler(x => x
               .WithKeyConditionExpression(((x, y) => $"{x.Id} = {y.Id}"))
               .ToQueryRequestBuilder() with
-          { IndexName = "INDEX" }, amazonDynamoDB)
+          { IndexName = "INDEX" }, x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send((Guid.NewGuid(), 2), default);
 
         Assert.Equal(chunks.SelectMany(x => x.Elements).ToArray(), actual);
-    }
-}
-public static class PredicateBuilder
-{
-
-    internal class SubstExpressionVisitor : System.Linq.Expressions.ExpressionVisitor
-    {
-        public Dictionary<Expression, Expression> subst = new Dictionary<Expression, Expression>();
-
-        protected override Expression VisitParameter(ParameterExpression node)
-        {
-            if (subst.TryGetValue(node, out var newValue))
-            {
-                return newValue;
-            }
-            return node;
-        }
-    }
-    public static Expression<Predicate<T>> And<T>(this Expression<Predicate<T>> a, Expression<Func<T, bool>> b)
-    {
-
-        ParameterExpression p = a.Parameters[0];
-
-        SubstExpressionVisitor visitor = new SubstExpressionVisitor();
-        visitor.subst[b.Parameters[0]] = p;
-
-        Expression body = Expression.AndAlso(a.Body, visitor.Visit(b.Body));
-        return Expression.Lambda<Predicate<T>>(body, p);
-    }
-
-    public static Expression<Predicate<T>> Or<T>(this Expression<Predicate<T>> a, Expression<Func<T, bool>> b)
-    {
-
-        ParameterExpression p = a.Parameters[0];
-
-        SubstExpressionVisitor visitor = new SubstExpressionVisitor();
-        visitor.subst[b.Parameters[0]] = p;
-
-        Expression body = Expression.OrElse(a.Body, visitor.Visit(b.Body));
-        return Expression.Lambda<Predicate<T>>(body, p);
     }
 }
