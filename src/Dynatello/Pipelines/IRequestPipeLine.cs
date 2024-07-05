@@ -40,8 +40,7 @@ internal static class RequestPipelineExtensons
         CancellationToken cancellationToken
         ) where TRequest : AmazonDynamoDBRequest where TResponse : AmazonWebServiceResponse
     {
-
-        return pipelines.IsEmpty()
+        return pipelines.ShouldIterate()
           ? WithPipeline(request, pipelines, dynamoDb, invocation, cancellationToken)
           : invocation(request, dynamoDb, cancellationToken);
 
@@ -77,14 +76,14 @@ internal static class RequestPipelineExtensons
           .Aggregate(request, (execution, continuation) => requestContext => continuation(requestContext, execution));
     }
 
-    private static bool IsEmpty<T>(this IEnumerable<T> pipelines)
+    private static bool ShouldIterate<T>(this IEnumerable<T> pipelines)
     {
         return pipelines switch
         {
-            _ when pipelines == Enumerable.Empty<T>() => true,
-            _ when pipelines == Array.Empty<T>() => true,
-            _ when pipelines.TryGetNonEnumeratedCount(out var count) && count == 0 => true,
-            _ => false
+            _ when pipelines == Enumerable.Empty<T>() => false,
+            _ when pipelines == Array.Empty<T>() => false,
+            _ when pipelines.TryGetNonEnumeratedCount(out var count) => count != 0,
+            _ => true
         };
     }
 }

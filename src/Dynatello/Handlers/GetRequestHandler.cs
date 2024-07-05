@@ -35,12 +35,17 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     /// If the unmarshalling could not build the <typeparamref name="T"/> correctly due to missing required values.
     /// </exception>
     /// <remarks>
-    /// Will not do any exception handling when invcoking <see cref="IAmazonDynamoDB.GetItemAsync(GetItemRequest, CancellationToken)"/>.
+    /// Will not do any exception handling when invoking <see cref="IAmazonDynamoDB.GetItemAsync(GetItemRequest, CancellationToken)"/>.
     /// </remarks>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var response = await _createRequest(arg)
-          .SendRequest<GetItemRequest, GetItemResponse>(_requestsPipelines, async (x, y, z) => await y.GetItemAsync(x, z), _client, cancellationToken);
+          .SendRequest<GetItemRequest, GetItemResponse>(
+            _requestsPipelines,
+            (x, y, z) => y.GetItemAsync(x, z),
+            _client,
+            cancellationToken
+          );
 
         return response.IsItemSet
           ? _createItem(response.Item)
