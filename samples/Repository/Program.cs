@@ -27,7 +27,7 @@ public class ProductRepository
               x => x
                   .WithUpdateExpression((db, arg) => $"SET {db.Price} = {arg.NewPrice}, {db.Metadata.ModifiedAt} = {arg.TimeStamp}") // Specify the update operation
                   .ToUpdateItemRequestBuilder(((marshaller, arg) => marshaller.PartitionKey(arg.Id))),
-              amazonDynamoDb
+               x => x.AmazonDynamoDB = amazonDynamoDb
             );
 
         _createProduct = Product.Put
