@@ -34,14 +34,39 @@ public static class TableAccessExtensions
     public static IRequestHandler<TArg, T?> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
         this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
         Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector,
-        IAmazonDynamoDB dynamoDb
+        Action<HandlerOptions> configure
     )
       where TReferences : IAttributeExpressionNameTracker
       where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
       where TArg : notnull
       where T : notnull
     {
-        return new UpdateRequestHandler<TArg, T>(dynamoDb, requestBuilderSelector(item.ToRequestBuilderFactory()).Build, item.Marshaller.Unmarshall);
+        var options = new HandlerOptions();
+        configure(options);
+        
+        return new UpdateRequestHandler<TArg, T>(
+            options,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+    /// <summary>
+    /// Creates a <see cref="UpdateItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, T?> ToUpdateRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, UpdateItemRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new UpdateRequestHandler<TArg, T>(
+            new HandlerOptions(),
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
     }
 
     /// <summary>
