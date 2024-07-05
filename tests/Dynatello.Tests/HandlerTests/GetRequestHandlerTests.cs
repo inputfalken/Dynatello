@@ -58,7 +58,7 @@ public class GetRequestHandlerTests
         Assert.DoesNotContain(false, pipeLineTimestamps.Zip(pipeLineTimestamps.Skip(1), (x, y) =>
               (x < y)
               &&
-              (y - x) < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
+              (y - x) < TimeSpan.FromMilliseconds(20) // ugly hack to verify that request comes last.
               )
             );
     }

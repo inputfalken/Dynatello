@@ -8,6 +8,7 @@ public sealed record RequestContext<TRequest> : RequestContext where TRequest : 
     {
         Request = request;
     }
+    
     public TRequest Request { get; }
 }
 
