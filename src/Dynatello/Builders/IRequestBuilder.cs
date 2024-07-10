@@ -8,7 +8,7 @@ namespace Dynatello.Builders;
 public interface IRequestBuilder<T, TRequest> where TRequest : AmazonDynamoDBRequest
 {
     /// <summary>
-    /// Builds a from the argument provided.
+    /// Builds a <typeparamref name="TRequest"/> from <typeparamref name="T"/>.
     /// </summary>
     public TRequest Build(T arg);
 }

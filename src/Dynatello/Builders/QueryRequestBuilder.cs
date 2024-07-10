@@ -14,15 +14,20 @@ public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryR
 
 {
     private readonly Func<T, IAttributeExpression> _attributeExpressionSelector;
+    private readonly string _tableName;
 
     internal QueryRequestBuilder(Func<T, IAttributeExpression> attributeExpressionSelector, string tableName)
     {
         _attributeExpressionSelector = attributeExpressionSelector;
-        TableName = tableName;
+        _tableName = tableName;
     }
 
     /// <inheritdoc cref="QueryRequest.TableName" />
-    public string TableName { get; init; }
+    public string TableName
+    {
+        get => _tableName;
+        init => _tableName = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <inheritdoc cref="QueryRequest.IndexName" />
     public string? IndexName { get; init; } = null;

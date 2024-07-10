@@ -57,6 +57,7 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
     /// <inheritdoc cref="DeleteItemRequest.ReturnValuesOnConditionCheckFailure" />
     public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } = null;
 
+    /// <inheritdoc cref="IRequestBuilder{T, TRequest}.Build(T)"/>
     public DeleteItemRequest Build(T arg)
     {
         var expression = _attributeExpressionSelector(arg);
@@ -68,7 +69,6 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
             ExpressionAttributeValues = expression.Values,
             ConditionExpression = expression.Expressions[0],
             ConditionalOperator = null,
-            Expected = null
         };
 
         if (ReturnValues is not null)

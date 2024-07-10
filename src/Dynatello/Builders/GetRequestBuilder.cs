@@ -11,17 +11,22 @@ namespace Dynatello.Builders;
 public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemRequest>
 {
     private readonly Func<T, Dictionary<string, AttributeValue>> _keysSelector;
+    private readonly string _tableName;
 
     internal GetRequestBuilder(
         string tableName,
         Func<T, Dictionary<string, AttributeValue>> keysSelector)
     {
         _keysSelector = keysSelector;
-        TableName = tableName;
+        _tableName = tableName;
     }
 
     /// <inheritdoc cref="GetItemRequest.TableName" />
-    public string TableName { get; init; }
+    public string TableName
+    {
+        get => _tableName;
+        init => _tableName = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <inheritdoc cref="GetItemRequest.ConsistentRead" />
     public bool? ConsistentRead { get; init; } = null;
