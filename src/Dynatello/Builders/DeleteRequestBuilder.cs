@@ -20,7 +20,7 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
         string tableName,
         Func<T, Dictionary<string, AttributeValue>> keySelector,
         Func<T, IAttributeExpression>? attributeExpressionSelector
-        )
+    )
     {
         _attributeExpressionSelector = attributeExpressionSelector;
         _tableName = tableName;
