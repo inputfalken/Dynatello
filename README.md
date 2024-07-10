@@ -1,7 +1,7 @@
 # Dynatello
 
 ## What does it do?
-A DynamoDB source generator that does the heavy lifting when it comes to using the low-level client in DynamoDB.
+A reflection free & typed solution to send requests towards dynamodb without having to manually maintain the low-level parts.
 
 ## Features
 
