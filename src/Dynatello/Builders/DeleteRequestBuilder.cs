@@ -12,21 +12,19 @@ namespace Dynatello.Builders;
 /// </typeparam>
 public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, DeleteItemRequest>
 {
-    private readonly Func<T, IAttributeExpression> _attributeExpressionSelector;
-    private readonly IDynamoDBKeyMarshaller _keyMarshaller;
-    private readonly Func<IDynamoDBKeyMarshaller, T, Dictionary<string, AttributeValue>> _keySelector;
+    private readonly Func<T, IAttributeExpression>? _attributeExpressionSelector;
+    private readonly Func<T, Dictionary<string, AttributeValue>> _keySelector;
     private readonly string _tableName;
 
     internal DeleteRequestBuilder(
-        Func<T, IAttributeExpression> attributeExpressionSelector,
         string tableName,
-        Func<IDynamoDBKeyMarshaller, T, Dictionary<string, AttributeValue>> keySelector,
-        IDynamoDBKeyMarshaller keyMarshaller)
+        Func<T, Dictionary<string, AttributeValue>> keySelector,
+        Func<T, IAttributeExpression>? attributeExpressionSelector
+        )
     {
         _attributeExpressionSelector = attributeExpressionSelector;
         _tableName = tableName;
         _keySelector = keySelector;
-        _keyMarshaller = keyMarshaller;
     }
 
     /// <inheritdoc cref="DeleteItemRequest.TableName" />
@@ -36,14 +34,6 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
         init => _tableName = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    /// <summary>
-    ///     A function to specify how the keys should be accessed through the <typeparamref name="T" />.
-    /// </summary>
-    public Func<IDynamoDBKeyMarshaller, T, Dictionary<string, AttributeValue>> KeySelector
-    {
-        get => _keySelector;
-        init => _keySelector = value ?? throw new ArgumentNullException(nameof(value));
-    }
 
     /// <inheritdoc cref="DeleteItemRequest.ReturnConsumedCapacity" />
     public ReturnConsumedCapacity? ReturnConsumedCapacity { get; init; } = null;
@@ -60,16 +50,19 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
     /// <inheritdoc cref="IRequestBuilder{T, TRequest}.Build(T)"/>
     public DeleteItemRequest Build(T arg)
     {
-        var expression = _attributeExpressionSelector(arg);
         var request = new DeleteItemRequest
         {
             TableName = TableName,
-            Key = _keySelector(_keyMarshaller, arg),
-            ExpressionAttributeNames = expression.Names,
-            ExpressionAttributeValues = expression.Values,
-            ConditionExpression = expression.Expressions[0],
+            Key = _keySelector(arg),
             ConditionalOperator = null,
         };
+
+        if (_attributeExpressionSelector?.Invoke(arg) is { } expression)
+        {
+            request.ExpressionAttributeNames = expression.Names;
+            request.ExpressionAttributeValues = expression.Values;
+            request.ConditionExpression = expression.Expressions[0];
+        }
 
         if (ReturnValues is not null)
             request.ReturnValues = ReturnValues;
