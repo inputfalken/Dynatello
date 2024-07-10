@@ -2,7 +2,6 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Builders;
-
 /// <summary>
 /// A <see cref="GetItemRequest"/> builder that can be configured through the record `with` syntax.
 /// </summary>
