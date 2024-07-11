@@ -3,13 +3,13 @@ using Dynatello.Pipelines;
 
 namespace Dynatello.Handlers;
 
-internal sealed class DeleteREquestHandler<TArg, T> : IRequestHandler<TArg, T?>
+internal sealed class DeleteRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
 {
     private readonly HandlerOptions _handlerOptions;
     private readonly Func<TArg, DeleteItemRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _createItem;
 
-    internal DeleteREquestHandler(
+    internal DeleteRequestHandler(
         HandlerOptions handlerOptions,
         Func<TArg, DeleteItemRequest> createRequest,
         Func<Dictionary<string, AttributeValue>, T> createItem
