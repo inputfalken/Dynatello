@@ -16,7 +16,7 @@ public class ToDeleteItemRequestTests
         var act = () => Cat.GetByCompositeInvalidPartition
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
+            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id} AND {x.HomeId} = {y.HomeId}")
             .ToDeleteRequestBuilder(x => x.Id, x => x.HomeId)
             .Build(("", Guid.Empty));
 
@@ -31,7 +31,7 @@ public class ToDeleteItemRequestTests
         var act = () => Cat.GetByCompositeInvalidRange
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
+            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id} AND {x.HomeId} = {y.HomeId}")
             .ToDeleteRequestBuilder(x => x.Id, x => x.HomeId)
             .Build((Guid.Empty, ""));
 
@@ -46,7 +46,7 @@ public class ToDeleteItemRequestTests
         var act = () => Cat.GetByCompositeInvalidPartitionAndRange
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
+            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id} AND {x.HomeId} = {y.HomeId}")
             .ToDeleteRequestBuilder(x => x.Id, x => x.HomeId)
             .Build((2.3, ""));
 
@@ -92,8 +92,9 @@ public class ToDeleteItemRequestTests
                         { nameof(Cat.Id), new AttributeValue { S = x.ToString() } }
                     },
                     TableName = "TABLE",
-                    ExpressionAttributeNames = new Dictionary<string, string>(),
-                    ReturnConsumedCapacity = null,
+                    ConditionExpression = "#Id = :p1",
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>() { { ":p1", new AttributeValue() { S = x.ToString() } } },
+                    ExpressionAttributeNames = new Dictionary<string, string>() { { "#Id", "Id" } },
                 }));
     }
 
@@ -103,7 +104,7 @@ public class ToDeleteItemRequestTests
         var getCatByCompositeKeys = Cat.GetByCompositeKey
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
+            .WithConditionExpression((x, y) => $"{x.Id} = {y.Id} AND {x.HomeId} = {y.HomeId}")
             .ToDeleteRequestBuilder(x => x.Id, x => x.HomeId);
 
         Cat.Fixture
@@ -120,8 +121,10 @@ public class ToDeleteItemRequestTests
                             { nameof(Cat.HomeId), new AttributeValue { S = x.RangeKey.ToString() } }
                         },
                     TableName = "TABLE",
-                    ExpressionAttributeNames = new Dictionary<string, string>(),
                     ReturnConsumedCapacity = null,
+                    ConditionExpression = "#Id = :p1 AND #HomeId = :p2",
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>() { { ":p1", new AttributeValue() { S = x.PartitionKey.ToString() } }, { ":p2", new AttributeValue() { S = x.RangeKey.ToString() } } },
+                    ExpressionAttributeNames = new Dictionary<string, string>() { { "#Id", "Id" }, { "#HomeId", "HomeId" } },
                 }
                 )
             );
