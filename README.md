@@ -1,7 +1,7 @@
 # Dynatello
 
 ## What does it do?
-A reflection free & typed solution to send requests towards dynamodb without having to manually maintain the low-level parts.
+A reflection free & generic typed solution to send requests towards dynamodb without having to manually maintain the low-level parts.
 
 ## Features
 
