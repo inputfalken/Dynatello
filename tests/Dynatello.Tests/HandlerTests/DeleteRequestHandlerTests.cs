@@ -1,4 +1,5 @@
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 using Dynatello.Builders;
@@ -26,7 +27,7 @@ public class DeleteRequestHandlerTests
 
         var actual = await Cat.GetById
           .OnTable("TABLE")
-          .ToDeleteRequestHandler(x => x.ToDeleteRequestBuilder(), x => x.AmazonDynamoDB = amazonDynamoDB)
+          .ToDeleteRequestHandler(x => x.ToDeleteRequestBuilder() with { ReturnValues = ReturnValue.ALL_OLD }, x => x.AmazonDynamoDB = amazonDynamoDB)
           .Send(expected.Id, default);
 
         Assert.Equal(expected, actual);
