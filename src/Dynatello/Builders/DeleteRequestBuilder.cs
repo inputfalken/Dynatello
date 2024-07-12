@@ -34,7 +34,6 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
         init => _tableName = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-
     /// <inheritdoc cref="DeleteItemRequest.ReturnConsumedCapacity" />
     public ReturnConsumedCapacity? ReturnConsumedCapacity { get; init; } = null;
 
@@ -45,7 +44,8 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
     public ReturnValue? ReturnValues { get; init; } = null;
 
     /// <inheritdoc cref="DeleteItemRequest.ReturnValuesOnConditionCheckFailure" />
-    public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } = null;
+    public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } =
+        null;
 
     /// <inheritdoc cref="IRequestBuilder{T, TRequest}.Build(T)"/>
     public DeleteItemRequest Build(T arg)
@@ -79,5 +79,3 @@ public readonly record struct DeleteRequestBuilder<T> : IRequestBuilder<T, Delet
         return request;
     }
 }
-
-

@@ -8,7 +8,11 @@ using FluentAssertions;
 namespace Dynatello.Tests;
 
 [DynamoDBMarshaller(EntityType = typeof(User))]
-[DynamoDBMarshaller(EntityType = typeof(User), AccessName = "UpdateEmail", ArgumentType = typeof(UpdateUserEmail))]
+[DynamoDBMarshaller(
+    EntityType = typeof(User),
+    AccessName = "UpdateEmail",
+    ArgumentType = typeof(UpdateUserEmail)
+)]
 public partial class ToUpdateItemRequestTests
 {
     private readonly Fixture _fixture = new();
@@ -19,58 +23,85 @@ public partial class ToUpdateItemRequestTests
         var updateFirst = UpdateEmail
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}")
-            .WithConditionExpression((x, y) => $"{x.Id} = {y.UserId} AND {x.Email} <> {y.UserEmail}")
+            .WithUpdateExpression(
+                (x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}"
+            )
+            .WithConditionExpression(
+                (x, y) => $"{x.Id} = {y.UserId} AND {x.Email} <> {y.UserEmail}"
+            )
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.UserId, y.UserEmail));
 
         var conditionFirst = UpdateEmail
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithConditionExpression((x, y) => $"{x.Id} = {y.UserId} AND {x.Email} <> {y.UserEmail}")
-            .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}")
+            .WithConditionExpression(
+                (x, y) => $"{x.Id} = {y.UserId} AND {x.Email} <> {y.UserEmail}"
+            )
+            .WithUpdateExpression(
+                (x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}"
+            )
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.UserId, y.UserEmail));
 
-        _fixture
-            .CreateMany<UpdateUserEmail>()
-            .Should()
-            .AllSatisfy(x => Expected(x, updateFirst));
+        _fixture.CreateMany<UpdateUserEmail>().Should().AllSatisfy(x => Expected(x, updateFirst));
         _fixture
             .CreateMany<UpdateUserEmail>()
             .Should()
             .AllSatisfy(x => Expected(x, conditionFirst));
 
-        static void Expected(UpdateUserEmail updateUserEmail, UpdateRequestBuilder<UpdateUserEmail> builder) =>
-            builder.Build(updateUserEmail)
+        static void Expected(
+            UpdateUserEmail updateUserEmail,
+            UpdateRequestBuilder<UpdateUserEmail> builder
+        ) =>
+            builder
+                .Build(updateUserEmail)
                 .Should()
-                .BeEquivalentTo(new UpdateItemRequest
-                {
-                    AttributeUpdates = null,
-                    ConditionalOperator = null,
-                    ConditionExpression = "#Id = :p3 AND #Email <> :p1",
-                    Expected = null,
-                    ExpressionAttributeNames = new Dictionary<string, string>
+                .BeEquivalentTo(
+                    new UpdateItemRequest
                     {
-                        { "#Email", nameof(User.Email) }, { "#Id", nameof(User.Id) },
-                        { "#Metadata.#ModifiedAt", nameof(User.Metadata.ModifiedAt) }
-                    },
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                    {
-                        { ":p1", new AttributeValue { S = updateUserEmail.UserEmail } },
-                        { ":p2", new AttributeValue { S = updateUserEmail.TimeStamp.ToString("O") } },
-                        { ":p3", new AttributeValue { S = updateUserEmail.UserId } }
-                    },
-                    Key = new Dictionary<string, AttributeValue>
-                    {
-                        { nameof(User.Id), new AttributeValue { S = updateUserEmail.UserId } },
-                        { nameof(User.Email), new AttributeValue { S = updateUserEmail.UserEmail } }
-                    },
-                    ReturnConsumedCapacity = null,
-                    ReturnItemCollectionMetrics = null,
-                    ReturnValues = null,
-                    ReturnValuesOnConditionCheckFailure = null,
-                    TableName = "TABLE",
-                    UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2"
-                });
+                        AttributeUpdates = null,
+                        ConditionalOperator = null,
+                        ConditionExpression = "#Id = :p3 AND #Email <> :p1",
+                        Expected = null,
+                        ExpressionAttributeNames = new Dictionary<string, string>
+                        {
+                            { "#Email", nameof(User.Email) },
+                            { "#Id", nameof(User.Id) },
+                            { "#Metadata.#ModifiedAt", nameof(User.Metadata.ModifiedAt) }
+                        },
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                        {
+                            {
+                                ":p1",
+                                new AttributeValue { S = updateUserEmail.UserEmail }
+                            },
+                            {
+                                ":p2",
+                                new AttributeValue { S = updateUserEmail.TimeStamp.ToString("O") }
+                            },
+                            {
+                                ":p3",
+                                new AttributeValue { S = updateUserEmail.UserId }
+                            }
+                        },
+                        Key = new Dictionary<string, AttributeValue>
+                        {
+                            {
+                                nameof(User.Id),
+                                new AttributeValue { S = updateUserEmail.UserId }
+                            },
+                            {
+                                nameof(User.Email),
+                                new AttributeValue { S = updateUserEmail.UserEmail }
+                            }
+                        },
+                        ReturnConsumedCapacity = null,
+                        ReturnItemCollectionMetrics = null,
+                        ReturnValues = null,
+                        ReturnValuesOnConditionCheckFailure = null,
+                        TableName = "TABLE",
+                        UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2"
+                    }
+                );
     }
 
     [Fact]
@@ -79,43 +110,64 @@ public partial class ToUpdateItemRequestTests
         var builder = UpdateEmail
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}")
+            .WithUpdateExpression(
+                (x, y) => $"SET {x.Email} = {y.UserEmail}, {x.Metadata.ModifiedAt} = {y.TimeStamp}"
+            )
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.UserId, y.UserEmail));
 
         _fixture
             .CreateMany<UpdateUserEmail>()
             .Should()
-            .AllSatisfy(updateUserEmail => builder
-                .Build(updateUserEmail)
-                .Should()
-                .BeEquivalentTo(new UpdateItemRequest
-                {
-                    AttributeUpdates = null,
-                    ConditionalOperator = null,
-                    ConditionExpression = null,
-                    Expected = null,
-                    ExpressionAttributeNames = new Dictionary<string, string>
-                    {
-                        { "#Email", nameof(User.Email) },
-                        { "#Metadata.#ModifiedAt", nameof(User.Metadata.ModifiedAt) }
-                    },
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                    {
-                        { ":p1", new AttributeValue { S = updateUserEmail.UserEmail } },
-                        { ":p2", new AttributeValue { S = updateUserEmail.TimeStamp.ToString("O") } }
-                    },
-                    Key = new Dictionary<string, AttributeValue>
-                    {
-                        { nameof(User.Id), new AttributeValue { S = updateUserEmail.UserId } },
-                        { nameof(User.Email), new AttributeValue { S = updateUserEmail.UserEmail } }
-                    },
-                    ReturnConsumedCapacity = null,
-                    ReturnItemCollectionMetrics = null,
-                    ReturnValues = null,
-                    ReturnValuesOnConditionCheckFailure = null,
-                    TableName = "TABLE",
-                    UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2"
-                }));
+            .AllSatisfy(updateUserEmail =>
+                builder
+                    .Build(updateUserEmail)
+                    .Should()
+                    .BeEquivalentTo(
+                        new UpdateItemRequest
+                        {
+                            AttributeUpdates = null,
+                            ConditionalOperator = null,
+                            ConditionExpression = null,
+                            Expected = null,
+                            ExpressionAttributeNames = new Dictionary<string, string>
+                            {
+                                { "#Email", nameof(User.Email) },
+                                { "#Metadata.#ModifiedAt", nameof(User.Metadata.ModifiedAt) }
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                            {
+                                {
+                                    ":p1",
+                                    new AttributeValue { S = updateUserEmail.UserEmail }
+                                },
+                                {
+                                    ":p2",
+                                    new AttributeValue
+                                    {
+                                        S = updateUserEmail.TimeStamp.ToString("O")
+                                    }
+                                }
+                            },
+                            Key = new Dictionary<string, AttributeValue>
+                            {
+                                {
+                                    nameof(User.Id),
+                                    new AttributeValue { S = updateUserEmail.UserId }
+                                },
+                                {
+                                    nameof(User.Email),
+                                    new AttributeValue { S = updateUserEmail.UserEmail }
+                                }
+                            },
+                            ReturnConsumedCapacity = null,
+                            ReturnItemCollectionMetrics = null,
+                            ReturnValues = null,
+                            ReturnValuesOnConditionCheckFailure = null,
+                            TableName = "TABLE",
+                            UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2"
+                        }
+                    )
+            );
     }
 
     [Fact]
@@ -124,42 +176,61 @@ public partial class ToUpdateItemRequestTests
         var builder = UserMarshaller
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}")
+            .WithUpdateExpression(
+                (x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}"
+            )
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Id, y.Email));
 
-        _fixture.CreateMany<User>()
+        _fixture
+            .CreateMany<User>()
             .Should()
-            .AllSatisfy(x => builder
-                .Build(x)
-                .Should()
-                .BeEquivalentTo(new UpdateItemRequest
-                {
-                    AttributeUpdates = null,
-                    ConditionalOperator = null,
-                    ConditionExpression = null,
-                    Expected = null,
-                    ExpressionAttributeNames = new Dictionary<string, string>
-                    {
-                        { "#Email", nameof(User.Email) },
-                        { "#Firstname", nameof(User.Firstname) }
-                    },
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                    {
-                        { ":p1", new AttributeValue { S = x.Email } },
-                        { ":p2", new AttributeValue { S = x.Firstname } }
-                    },
-                    Key = new Dictionary<string, AttributeValue>
-                    {
-                        { nameof(User.Id), new AttributeValue { S = x.Id } },
-                        { nameof(User.Email), new AttributeValue { S = x.Email } }
-                    },
-                    ReturnConsumedCapacity = null,
-                    ReturnItemCollectionMetrics = null,
-                    ReturnValues = null,
-                    ReturnValuesOnConditionCheckFailure = null,
-                    TableName = "TABLE",
-                    UpdateExpression = "SET #Email = :p1, #Firstname = :p2"
-                }));
+            .AllSatisfy(x =>
+                builder
+                    .Build(x)
+                    .Should()
+                    .BeEquivalentTo(
+                        new UpdateItemRequest
+                        {
+                            AttributeUpdates = null,
+                            ConditionalOperator = null,
+                            ConditionExpression = null,
+                            Expected = null,
+                            ExpressionAttributeNames = new Dictionary<string, string>
+                            {
+                                { "#Email", nameof(User.Email) },
+                                { "#Firstname", nameof(User.Firstname) }
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                            {
+                                {
+                                    ":p1",
+                                    new AttributeValue { S = x.Email }
+                                },
+                                {
+                                    ":p2",
+                                    new AttributeValue { S = x.Firstname }
+                                }
+                            },
+                            Key = new Dictionary<string, AttributeValue>
+                            {
+                                {
+                                    nameof(User.Id),
+                                    new AttributeValue { S = x.Id }
+                                },
+                                {
+                                    nameof(User.Email),
+                                    new AttributeValue { S = x.Email }
+                                }
+                            },
+                            ReturnConsumedCapacity = null,
+                            ReturnItemCollectionMetrics = null,
+                            ReturnValues = null,
+                            ReturnValuesOnConditionCheckFailure = null,
+                            TableName = "TABLE",
+                            UpdateExpression = "SET #Email = :p1, #Firstname = :p2"
+                        }
+                    )
+            );
     }
 
     [Fact]
@@ -168,14 +239,18 @@ public partial class ToUpdateItemRequestTests
         var updateFirst = UserMarshaller
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}")
+            .WithUpdateExpression(
+                (x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}"
+            )
             .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Id, y.Email));
 
         var conditionFirst = UserMarshaller
             .OnTable("TABLE")
             .ToRequestBuilderFactory()
-            .WithUpdateExpression((x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}")
+            .WithUpdateExpression(
+                (x, y) => $"SET {x.Email} = {y.Email}, {x.Firstname} = {y.Firstname}"
+            )
             .WithConditionExpression((x, y) => $"{x.Id} = {y.Id}")
             .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Id, y.Email));
 
@@ -186,34 +261,52 @@ public partial class ToUpdateItemRequestTests
             builder
                 .Build(x)
                 .Should()
-                .BeEquivalentTo(new UpdateItemRequest
-                {
-                    AttributeUpdates = null,
-                    ConditionalOperator = null,
-                    ConditionExpression = "#Id = :p3",
-                    Expected = null,
-                    ExpressionAttributeNames = new Dictionary<string, string>()
+                .BeEquivalentTo(
+                    new UpdateItemRequest
                     {
-                        { "#Email", "Email" },
-                        { "#Firstname", "Firstname" },
-                        { "#Id", "Id" }
-                    },
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
-                    {
-                        { ":p1", new AttributeValue { S = x.Email } },
-                        { ":p2", new AttributeValue { S = x.Firstname } }, { ":p3", new AttributeValue { S = x.Id } }
-                    },
-                    Key = new Dictionary<string, AttributeValue>
-                    {
-                        { "Id", new AttributeValue { S = x.Id } },
-                        { "Email", new AttributeValue { S = x.Email } }
-                    },
-                    ReturnConsumedCapacity = null,
-                    ReturnItemCollectionMetrics = null,
-                    ReturnValues = null,
-                    ReturnValuesOnConditionCheckFailure = null,
-                    TableName = "TABLE",
-                    UpdateExpression = "SET #Email = :p1, #Firstname = :p2"
-                });
+                        AttributeUpdates = null,
+                        ConditionalOperator = null,
+                        ConditionExpression = "#Id = :p3",
+                        Expected = null,
+                        ExpressionAttributeNames = new Dictionary<string, string>()
+                        {
+                            { "#Email", "Email" },
+                            { "#Firstname", "Firstname" },
+                            { "#Id", "Id" }
+                        },
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
+                        {
+                            {
+                                ":p1",
+                                new AttributeValue { S = x.Email }
+                            },
+                            {
+                                ":p2",
+                                new AttributeValue { S = x.Firstname }
+                            },
+                            {
+                                ":p3",
+                                new AttributeValue { S = x.Id }
+                            }
+                        },
+                        Key = new Dictionary<string, AttributeValue>
+                        {
+                            {
+                                "Id",
+                                new AttributeValue { S = x.Id }
+                            },
+                            {
+                                "Email",
+                                new AttributeValue { S = x.Email }
+                            }
+                        },
+                        ReturnConsumedCapacity = null,
+                        ReturnItemCollectionMetrics = null,
+                        ReturnValues = null,
+                        ReturnValuesOnConditionCheckFailure = null,
+                        TableName = "TABLE",
+                        UpdateExpression = "SET #Email = :p1, #Firstname = :p2"
+                    }
+                );
     }
 }

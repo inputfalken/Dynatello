@@ -7,10 +7,9 @@ using Dynatello.Handlers;
 using NSubstitute;
 
 namespace Dynatello.Tests.HandlerTests;
+
 public class DeleteRequestHandlerTests
 {
-
-
     [Fact]
     public async Task Send_SuccessMock_ShouldReturnItem()
     {
@@ -18,17 +17,22 @@ public class DeleteRequestHandlerTests
         var expected = Cat.Fixture.Create<Cat>();
 
         amazonDynamoDB
-          .DeleteItemAsync(Arg.Any<DeleteItemRequest>())
-          .Returns(new DeleteItemResponse
-          {
-              HttpStatusCode = System.Net.HttpStatusCode.OK,
-              Attributes = Cat.GetById.Marshall(expected)
-          });
+            .DeleteItemAsync(Arg.Any<DeleteItemRequest>())
+            .Returns(
+                new DeleteItemResponse
+                {
+                    HttpStatusCode = System.Net.HttpStatusCode.OK,
+                    Attributes = Cat.GetById.Marshall(expected)
+                }
+            );
 
-        var actual = await Cat.GetById
-          .OnTable("TABLE")
-          .ToDeleteRequestHandler(x => x.ToDeleteRequestBuilder() with { ReturnValues = ReturnValue.ALL_OLD }, x => x.AmazonDynamoDB = amazonDynamoDB)
-          .Send(expected.Id, default);
+        var actual = await Cat
+            .GetById.OnTable("TABLE")
+            .ToDeleteRequestHandler(
+                x => x.ToDeleteRequestBuilder() with { ReturnValues = ReturnValue.ALL_OLD },
+                x => x.AmazonDynamoDB = amazonDynamoDB
+            )
+            .Send(expected.Id, default);
 
         Assert.Equal(expected, actual);
     }
@@ -40,13 +44,16 @@ public class DeleteRequestHandlerTests
         var expected = Cat.Fixture.Create<Cat>();
 
         amazonDynamoDB
-          .DeleteItemAsync(Arg.Any<DeleteItemRequest>())
-          .Returns(new DeleteItemResponse { });
+            .DeleteItemAsync(Arg.Any<DeleteItemRequest>())
+            .Returns(new DeleteItemResponse { });
 
-        var actual = await Cat.GetById
-          .OnTable("TABLE")
-          .ToDeleteRequestHandler(x => x.ToDeleteRequestBuilder(), x => x.AmazonDynamoDB = amazonDynamoDB)
-          .Send(expected.Id, default);
+        var actual = await Cat
+            .GetById.OnTable("TABLE")
+            .ToDeleteRequestHandler(
+                x => x.ToDeleteRequestBuilder(),
+                x => x.AmazonDynamoDB = amazonDynamoDB
+            )
+            .Send(expected.Id, default);
 
         Assert.Null(actual);
     }

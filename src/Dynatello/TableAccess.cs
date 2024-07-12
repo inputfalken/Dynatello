@@ -3,13 +3,16 @@ using Dynatello.Builders;
 
 namespace Dynatello;
 
-internal class TableAccess<T, TArg, TReferences, TArgumentReferences> :
-  ITableAccess<T, TArg, TReferences, TArgumentReferences>,
-  IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>
-  where TReferences : IAttributeExpressionNameTracker
-  where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+internal class TableAccess<T, TArg, TReferences, TArgumentReferences>
+    : ITableAccess<T, TArg, TReferences, TArgumentReferences>,
+        IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>
+    where TReferences : IAttributeExpressionNameTracker
+    where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
-    internal TableAccess(in string tableName, in IDynamoDBMarshaller<T, TArg, TReferences, TArgumentReferences> item)
+    internal TableAccess(
+        in string tableName,
+        in IDynamoDBMarshaller<T, TArg, TReferences, TArgumentReferences> item
+    )
     {
         TableName = tableName ?? throw new ArgumentNullException(nameof(tableName));
         Marshaller = item ?? throw new ArgumentNullException(nameof(item));
@@ -19,6 +22,10 @@ internal class TableAccess<T, TArg, TReferences, TArgumentReferences> :
 
     public string TableName { get; }
 
-    ITableAccess<T, TArg, TReferences, TArgumentReferences> IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>.TableAccess => this;
+    ITableAccess<T, TArg, TReferences, TArgumentReferences> IRequestBuilderFactory<
+        T,
+        TArg,
+        TReferences,
+        TArgumentReferences
+    >.TableAccess => this;
 }
-

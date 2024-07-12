@@ -1,4 +1,3 @@
-
 using Amazon.DynamoDBv2;
 using Dynatello.Pipelines;
 
@@ -11,10 +10,7 @@ public sealed class HandlerOptions
 
     public IAmazonDynamoDB AmazonDynamoDB
     {
-        get
-        {
-            return client ??= DefaultClient ??= new AmazonDynamoDBClient();
-        }
+        get { return client ??= DefaultClient ??= new AmazonDynamoDBClient(); }
         set { client = value; }
     }
 

@@ -14,7 +14,8 @@ public class UpdateExpression<T, TArg, TReferences, TArgumentReferences>
 
     internal UpdateExpression(
         in IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> tableAccess,
-        in Func<TReferences, TArgumentReferences, string> update)
+        in Func<TReferences, TArgumentReferences, string> update
+    )
     {
         Builder = tableAccess;
         Update = update;

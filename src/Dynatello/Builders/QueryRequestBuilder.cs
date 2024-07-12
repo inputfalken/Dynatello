@@ -11,12 +11,14 @@ namespace Dynatello.Builders;
 /// The type you need to provide in you execution.
 /// </typeparam>
 public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryRequest>
-
 {
     private readonly Func<T, IAttributeExpression> _attributeExpressionSelector;
     private readonly string _tableName;
 
-    internal QueryRequestBuilder(Func<T, IAttributeExpression> attributeExpressionSelector, string tableName)
+    internal QueryRequestBuilder(
+        Func<T, IAttributeExpression> attributeExpressionSelector,
+        string tableName
+    )
     {
         _attributeExpressionSelector = attributeExpressionSelector;
         _tableName = tableName;
@@ -65,7 +67,6 @@ public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryR
             ProjectionExpression = null
         };
 
-
         if (ReturnConsumedCapacity is not null)
             queryRequest.ReturnConsumedCapacity = ReturnConsumedCapacity;
 
@@ -80,9 +81,7 @@ public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryR
 
         if (Limit is { } limit)
             queryRequest.Limit = limit;
-        else
-
-        if (IndexName is not null)
+        else if (IndexName is not null)
             queryRequest.IndexName = IndexName;
 
         if (attributeExpression.Expressions.Count == 2)

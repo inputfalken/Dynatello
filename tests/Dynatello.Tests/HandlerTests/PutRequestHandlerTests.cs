@@ -20,21 +20,26 @@ public class PutRequestHandlerTests
         var expected = Cat.Fixture.Create<Cat>();
 
         amazonDynamoDB
-          .PutItemAsync(Arg.Any<PutItemRequest>())
-          .Returns(new PutItemResponse
-          {
-              HttpStatusCode = System.Net.HttpStatusCode.OK,
-              Attributes = Cat.Put.Marshall(expected)
-          });
+            .PutItemAsync(Arg.Any<PutItemRequest>())
+            .Returns(
+                new PutItemResponse
+                {
+                    HttpStatusCode = System.Net.HttpStatusCode.OK,
+                    Attributes = Cat.Put.Marshall(expected)
+                }
+            );
 
-        var actual = await Cat.Put
-          .OnTable("TABLE")
-          .ToPutRequestHandler(x => x.ToPutRequestBuilder() with { ReturnValues = new ReturnValue(returnValue) }, x => x.AmazonDynamoDB = amazonDynamoDB)
-          .Send(expected, default);
+        var actual = await Cat
+            .Put.OnTable("TABLE")
+            .ToPutRequestHandler(
+                x => x.ToPutRequestBuilder() with { ReturnValues = new ReturnValue(returnValue) },
+                x => x.AmazonDynamoDB = amazonDynamoDB
+            )
+            .Send(expected, default);
 
         Assert.Equal(expected, actual);
     }
-    
+
     [Theory]
     [InlineData("None")]
     [InlineData(null)]
@@ -44,18 +49,21 @@ public class PutRequestHandlerTests
         var expected = Cat.Fixture.Create<Cat>();
 
         amazonDynamoDB
-          .PutItemAsync(Arg.Any<PutItemRequest>())
-          .Returns(new PutItemResponse
-          {
-              HttpStatusCode = System.Net.HttpStatusCode.OK,
-          });
+            .PutItemAsync(Arg.Any<PutItemRequest>())
+            .Returns(new PutItemResponse { HttpStatusCode = System.Net.HttpStatusCode.OK, });
 
-        var actual = await Cat.Put
-          .OnTable("TABLE")
-          .ToPutRequestHandler(x => x.ToPutRequestBuilder() with { ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null }, x => x.AmazonDynamoDB = amazonDynamoDB)
-          .Send(expected, default);
+        var actual = await Cat
+            .Put.OnTable("TABLE")
+            .ToPutRequestHandler(
+                x =>
+                    x.ToPutRequestBuilder() with
+                    {
+                        ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null
+                    },
+                x => x.AmazonDynamoDB = amazonDynamoDB
+            )
+            .Send(expected, default);
 
         Assert.Equal(actual, null);
     }
 }
-

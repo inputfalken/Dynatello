@@ -19,21 +19,17 @@ internal sealed class DeleteRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
         _createRequest = createRequest;
         _createItem = createItem;
     }
-    
+
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
-        var response = await request
-          .SendRequest(
+        var response = await request.SendRequest(
             _handlerOptions.RequestsPipelines,
             (x, y, z) => y.DeleteItemAsync(x, z),
             _handlerOptions.AmazonDynamoDB,
             cancellationToken
-          );
+        );
 
-        return request.ReturnValues.IsValueProvided()
-          ? _createItem(response.Attributes)
-          : default;
+        return request.ReturnValues.IsValueProvided() ? _createItem(response.Attributes) : default;
     }
 }
-

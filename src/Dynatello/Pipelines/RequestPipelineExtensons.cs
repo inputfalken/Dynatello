@@ -11,11 +11,13 @@ internal static class RequestPipelineExtensons
         Func<TRequest, IAmazonDynamoDB, CancellationToken, Task<TResponse>> invocation,
         IAmazonDynamoDB dynamoDb,
         CancellationToken cancellationToken
-        ) where TRequest : AmazonDynamoDBRequest where TResponse : AmazonWebServiceResponse
+    )
+        where TRequest : AmazonDynamoDBRequest
+        where TResponse : AmazonWebServiceResponse
     {
         return pipelines.ShouldIterate()
-          ? WithPipeline(request, pipelines, dynamoDb, invocation, cancellationToken)
-          : invocation(request, dynamoDb, cancellationToken);
+            ? WithPipeline(request, pipelines, dynamoDb, invocation, cancellationToken)
+            : invocation(request, dynamoDb, cancellationToken);
 
         static async Task<TResponse> WithPipeline(
             TRequest request,
@@ -25,13 +27,14 @@ internal static class RequestPipelineExtensons
             CancellationToken cancellationToken
         )
         {
-
             var requestContext = new RequestContext<TRequest>(request, cancellationToken);
             var requestPipeLine = pipelines.Compose(async x =>
             {
                 return object.ReferenceEquals(x, requestContext) is false
-                                  ? throw new InvalidOperationException($"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}.")
-                                  : await invocation((TRequest)x.Request, dynamoDb, cancellationToken);
+                    ? throw new InvalidOperationException(
+                        $"Request context is not the same object, make sure to pass on the {nameof(RequestContext)}."
+                    )
+                    : await invocation((TRequest)x.Request, dynamoDb, cancellationToken);
             });
 
             return (TResponse)(await requestPipeLine(requestContext));
@@ -41,12 +44,23 @@ internal static class RequestPipelineExtensons
     private static Func<RequestContext, Task<AmazonWebServiceResponse>> Compose(
         this IEnumerable<IRequestPipeLine> pipelines,
         Func<RequestContext, Task<AmazonWebServiceResponse>> request
-      )
+    )
     {
         return pipelines
-          .Select<IRequestPipeLine, Func<RequestContext, Func<RequestContext, Task<AmazonWebServiceResponse>>, Task<AmazonWebServiceResponse>>>(x => x.Invoke)
-          .Reverse()
-          .Aggregate(request, (execution, continuation) => requestContext => continuation(requestContext, execution));
+            .Select<
+                IRequestPipeLine,
+                Func<
+                    RequestContext,
+                    Func<RequestContext, Task<AmazonWebServiceResponse>>,
+                    Task<AmazonWebServiceResponse>
+                >
+            >(x => x.Invoke)
+            .Reverse()
+            .Aggregate(
+                request,
+                (execution, continuation) =>
+                    requestContext => continuation(requestContext, execution)
+            );
     }
 
     private static bool ShouldIterate<T>(this IEnumerable<T> pipelines)
@@ -60,4 +74,3 @@ internal static class RequestPipelineExtensons
         };
     }
 }
-

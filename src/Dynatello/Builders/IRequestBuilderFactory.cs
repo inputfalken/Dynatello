@@ -23,5 +23,3 @@ public interface IRequestBuilderFactory<T, TArg, TReferences, TArgumentReference
 {
     public ITableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess { get; }
 }
-
-

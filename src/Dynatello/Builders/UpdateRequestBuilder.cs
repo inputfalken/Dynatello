@@ -11,11 +11,14 @@ namespace Dynatello.Builders;
 /// The type you need to provide in you execution.
 /// </typeparam>
 public readonly record struct UpdateRequestBuilder<T> : IRequestBuilder<T, UpdateItemRequest>
-
 {
     private readonly Func<T, IAttributeExpression> _attributeExpressionSelector;
     private readonly IDynamoDBKeyMarshaller _keyMarshaller;
-    private readonly Func<IDynamoDBKeyMarshaller, T, Dictionary<string, AttributeValue>> _keySelector;
+    private readonly Func<
+        IDynamoDBKeyMarshaller,
+        T,
+        Dictionary<string, AttributeValue>
+    > _keySelector;
     private readonly string _tableName;
 
     internal UpdateRequestBuilder(
@@ -57,8 +60,8 @@ public readonly record struct UpdateRequestBuilder<T> : IRequestBuilder<T, Updat
     public ReturnValue? ReturnValues { get; init; } = null;
 
     /// <inheritdoc cref="UpdateItemRequest.ReturnValuesOnConditionCheckFailure" />
-    public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } = null;
-
+    public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } =
+        null;
 
     /// <summary>
     ///     Will build a <see cref="UpdateItemRequest" /> with the specified configurations.
@@ -69,7 +72,9 @@ public readonly record struct UpdateRequestBuilder<T> : IRequestBuilder<T, Updat
         var update = new UpdateItemRequest
         {
             UpdateExpression = expression.Expressions[0],
-            ConditionExpression = expression.Expressions.Count is 2 ? expression.Expressions[1] : null,
+            ConditionExpression = expression.Expressions.Count is 2
+                ? expression.Expressions[1]
+                : null,
             TableName = TableName,
             Key = KeySelector(_keyMarshaller, arg),
             ExpressionAttributeNames = expression.Names,
@@ -90,7 +95,6 @@ public readonly record struct UpdateRequestBuilder<T> : IRequestBuilder<T, Updat
 
         if (ReturnValuesOnConditionCheckFailure is not null)
             update.ReturnValuesOnConditionCheckFailure = ReturnValuesOnConditionCheckFailure;
-
 
         return update;
     }

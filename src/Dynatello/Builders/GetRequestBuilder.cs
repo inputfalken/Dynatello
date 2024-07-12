@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
 namespace Dynatello.Builders;
+
 /// <summary>
 /// A <see cref="GetItemRequest"/> builder that can be configured through the record `with` syntax.
 /// </summary>
@@ -15,7 +16,8 @@ public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemR
 
     internal GetRequestBuilder(
         string tableName,
-        Func<T, Dictionary<string, AttributeValue>> keysSelector)
+        Func<T, Dictionary<string, AttributeValue>> keysSelector
+    )
     {
         _keysSelector = keysSelector;
         _tableName = tableName;
@@ -59,4 +61,3 @@ public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemR
         return request;
     }
 }
-

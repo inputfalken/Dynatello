@@ -16,7 +16,8 @@ public class ConditionalUpdateExpression<T, TArg, TReferences, TArgumentReferenc
     internal ConditionalUpdateExpression(
         in IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> tableAccess,
         in Func<TReferences, TArgumentReferences, string> update,
-        in Func<TReferences, TArgumentReferences, string> condition)
+        in Func<TReferences, TArgumentReferences, string> condition
+    )
     {
         Builder = tableAccess;
         Update = update;

@@ -11,9 +11,7 @@ namespace Dynatello;
 
 public static class DynamoDBMarshallerExtensions
 {
-
-    internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>
-    (
+    internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>(
         this IDynamoDBKeyMarshaller source,
         Func<TArg, object> partitionKeySelector,
         Func<TArg, object>? rangeKeySelector
@@ -28,8 +26,12 @@ public static class DynamoDBMarshallerExtensions
         };
     }
 
-    internal static Func<TArg, IAttributeExpression> ComposeAttributeExpression<T, TArg, TReferences,
-        TArgumentReferences>(
+    internal static Func<TArg, IAttributeExpression> ComposeAttributeExpression<
+        T,
+        TArg,
+        TReferences,
+        TArgumentReferences
+    >(
         this IDynamoDBMarshaller<T, TArg, TReferences, TArgumentReferences> source,
         Func<TReferences, TArgumentReferences, string>? update,
         Func<TReferences, TArgumentReferences, string>? condition

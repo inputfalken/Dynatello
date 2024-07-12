@@ -21,7 +21,8 @@ internal static class ReturnValueExtensions
         if (value == ReturnValue.UPDATED_NEW)
             return true;
 
-        throw new ArgumentOutOfRangeException($"Could not determine value '{value.Value}' from type {typeof(ReturnValue)}");
+        throw new ArgumentOutOfRangeException(
+            $"Could not determine value '{value.Value}' from type {typeof(ReturnValue)}"
+        );
     }
 }
-

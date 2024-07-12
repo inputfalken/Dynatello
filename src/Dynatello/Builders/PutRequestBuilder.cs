@@ -17,7 +17,6 @@ public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemR
 
     private readonly string _tableName;
 
-
     internal PutRequestBuilder(
         Func<T, IAttributeExpression>? attributeExpressionSelector,
         Func<T, Dictionary<string, AttributeValue>> marshall,
@@ -46,8 +45,8 @@ public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemR
     public ReturnItemCollectionMetrics? ReturnItemCollectionMetrics { get; init; } = null;
 
     /// <inheritdoc cref="PutItemRequest.ReturnValuesOnConditionCheckFailure" />
-    public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } = null;
-
+    public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } =
+        null;
 
     public PutItemRequest Build(T element)
     {
@@ -71,7 +70,8 @@ public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemR
         if (ReturnValuesOnConditionCheckFailure is not null)
             request.ReturnValuesOnConditionCheckFailure = ReturnValuesOnConditionCheckFailure;
 
-        if (_attributeExpressionSelector is null) return request;
+        if (_attributeExpressionSelector is null)
+            return request;
         var attributeExpression = _attributeExpressionSelector(element);
 
         request.ExpressionAttributeNames = attributeExpression.Names;

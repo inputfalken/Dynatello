@@ -1,10 +1,10 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using Dynatello.Handlers;
-using Dynatello.Builders.Types;
-using Dynatello.Builders;
-using NSubstitute;
 using AutoFixture;
+using Dynatello.Builders;
+using Dynatello.Builders.Types;
+using Dynatello.Handlers;
+using NSubstitute;
 
 namespace Dynatello.Tests.HandlerTests;
 
@@ -22,21 +22,27 @@ public class UpdateRequestHandlerTests
 
         var expected = Cat.Fixture.Create<Cat>();
         amazonDynamoDB
-          .UpdateItemAsync(Arg.Any<UpdateItemRequest>())
-          .Returns(new UpdateItemResponse
-          {
-              HttpStatusCode = System.Net.HttpStatusCode.OK,
-              Attributes = Cat.UpdateHome.Marshall(expected)
-          });
+            .UpdateItemAsync(Arg.Any<UpdateItemRequest>())
+            .Returns(
+                new UpdateItemResponse
+                {
+                    HttpStatusCode = System.Net.HttpStatusCode.OK,
+                    Attributes = Cat.UpdateHome.Marshall(expected)
+                }
+            );
 
-        var actual = await Cat.UpdateHome
-          .OnTable("TABLE")
-          .ToUpdateRequestHandler(x => x
-              .WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
-              .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
-          { ReturnValues = new ReturnValue(returnValue) }, x => x.AmazonDynamoDB = amazonDynamoDB
-          )
-          .Send((expected.Id, expected.HomeId), default);
+        var actual = await Cat
+            .UpdateHome.OnTable("TABLE")
+            .ToUpdateRequestHandler(
+                x =>
+                    x.WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
+                        .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
+                    {
+                        ReturnValues = new ReturnValue(returnValue)
+                    },
+                x => x.AmazonDynamoDB = amazonDynamoDB
+            )
+            .Send((expected.Id, expected.HomeId), default);
 
         Assert.Equal(expected, actual);
     }
@@ -50,20 +56,21 @@ public class UpdateRequestHandlerTests
         var update = Guid.NewGuid();
 
         amazonDynamoDB
-          .UpdateItemAsync(Arg.Any<UpdateItemRequest>())
-          .Returns(new UpdateItemResponse
-          {
-              HttpStatusCode = System.Net.HttpStatusCode.OK,
-          });
+            .UpdateItemAsync(Arg.Any<UpdateItemRequest>())
+            .Returns(new UpdateItemResponse { HttpStatusCode = System.Net.HttpStatusCode.OK, });
 
-        var actual = await Cat.UpdateHome
-          .OnTable("TABLE")
-          .ToUpdateRequestHandler(x => x
-              .WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
-              .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
-          { ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null }, x => x.AmazonDynamoDB = amazonDynamoDB
-          )
-          .Send((Guid.NewGuid(), Guid.NewGuid()), default);
+        var actual = await Cat
+            .UpdateHome.OnTable("TABLE")
+            .ToUpdateRequestHandler(
+                x =>
+                    x.WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
+                        .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
+                    {
+                        ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null
+                    },
+                x => x.AmazonDynamoDB = amazonDynamoDB
+            )
+            .Send((Guid.NewGuid(), Guid.NewGuid()), default);
 
         Assert.Equal(null, actual);
     }

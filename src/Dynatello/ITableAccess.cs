@@ -24,5 +24,3 @@ public interface ITableAccess<T, TArg, TReferences, TArgumentReferences>
     public IDynamoDBMarshaller<T, TArg, TReferences, TArgumentReferences> Marshaller { get; }
     public string TableName { get; }
 }
-
-

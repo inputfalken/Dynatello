@@ -4,12 +4,13 @@ using DynamoDBGenerator.Exceptions;
 using Dynatello.Pipelines;
 
 namespace Dynatello.Handlers;
+
 /// <summary>
 /// A request handler for sending a <see cref="GetItemRequest"/> and recieving a <see cref="GetItemResponse"/> whose payload will be unmarshlled into <typeparamref name="T"/>
 /// </summary>
 internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
-  where T : notnull
-  where TArg : notnull
+    where T : notnull
+    where TArg : notnull
 {
     private readonly IAmazonDynamoDB _client;
     private readonly Func<TArg, GetItemRequest> _createRequest;
@@ -40,15 +41,13 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var response = await _createRequest(arg)
-          .SendRequest<GetItemRequest, GetItemResponse>(
-            _requestsPipelines,
-            (x, y, z) => y.GetItemAsync(x, z),
-            _client,
-            cancellationToken
-          );
+            .SendRequest<GetItemRequest, GetItemResponse>(
+                _requestsPipelines,
+                (x, y, z) => y.GetItemAsync(x, z),
+                _client,
+                cancellationToken
+            );
 
-        return response.IsItemSet
-          ? _createItem(response.Item)
-          : default;
+        return response.IsItemSet ? _createItem(response.Item) : default;
     }
 }
