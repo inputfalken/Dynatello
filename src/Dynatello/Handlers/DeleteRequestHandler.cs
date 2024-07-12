@@ -19,6 +19,7 @@ internal sealed class DeleteRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
         _createRequest = createRequest;
         _createItem = createItem;
     }
+    
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
