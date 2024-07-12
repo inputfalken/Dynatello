@@ -167,4 +167,46 @@ public static class TableAccessExtensions
         );
     }
 
+
+    /// <summary>
+    /// Creates a <see cref="DeleteItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, T?> ToDeleteRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, DeleteItemRequest>> requestBuilderSelector
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        return new DeleteRequestHandler<TArg, T>(
+            new HandlerOptions(),
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+    
+    /// <summary>
+    /// Creates a <see cref="DeleteItemRequest"/> based <see cref="IRequestHandler{T, TArg}"/> from an <see cref="IRequestBuilder{TArg, TRequest}"/>.
+    /// </summary>
+    public static IRequestHandler<TArg, T?> ToDeleteRequestHandler<T, TArg, TReferences, TArgumentReferences>(
+        this ITableAccess<T, TArg, TReferences, TArgumentReferences> item,
+        Func<IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>, IRequestBuilder<TArg, DeleteItemRequest>> requestBuilderSelector,
+        Action<HandlerOptions> configure
+    )
+      where TReferences : IAttributeExpressionNameTracker
+      where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+      where TArg : notnull
+      where T : notnull
+    {
+        var options = new HandlerOptions();
+        configure(options);
+        return new DeleteRequestHandler<TArg, T>(
+            options,
+            requestBuilderSelector(item.ToRequestBuilderFactory()).Build,
+            item.Marshaller.Unmarshall
+        );
+    }
+
 }

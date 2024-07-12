@@ -13,10 +13,11 @@ ProductRepository productRepository = new ProductRepository("PRODUCTS", new Amaz
 
 public class ProductRepository
 {
-    private readonly IRequestHandler<string, Product?> _getProductByIdRequest;
+    private readonly IRequestHandler<string, Product?> _getById;
     private readonly IRequestHandler<(string Id, decimal NewPrice, DateTime TimeStamp), Product?> _updatePrice;
     private readonly IRequestHandler<Product, Product?> _createProduct;
     private readonly IRequestHandler<decimal, IReadOnlyList<Product>> _queryByPrice;
+    private readonly IRequestHandler<string, Product?> _deleteById;
 
     private class RequestLogger : IRequestPipeLine
     {
@@ -33,7 +34,7 @@ public class ProductRepository
     public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
     {
         var requestLogger = new RequestLogger();
-        _getProductByIdRequest = Product.GetById
+        _getById = Product.WithIdArgument
             .OnTable(tableName)
             .ToGetRequestHandler(
               x => x.ToGetRequestBuilder(),
@@ -44,6 +45,13 @@ public class ProductRepository
                   x.RequestsPipelines.Add(requestLogger);
               }
             );
+
+        _deleteById = Product.WithIdArgument
+          .OnTable(tableName)
+          .ToDeleteRequestHandler(
+              x => x.ToDeleteRequestBuilder(),
+              x => x.AmazonDynamoDB = amazonDynamoDb
+          );
 
         _updatePrice = Product.UpdatePrice
             .OnTable(tableName)
@@ -74,7 +82,7 @@ public class ProductRepository
             );
 
         // You can also use a RequestBuilder if you want to handle the response yourself.
-        GetRequestBuilder<string> getProductByIdRequestBuilder = Product.GetById
+        GetRequestBuilder<string> getProductByIdRequestBuilder = Product.WithIdArgument
           .OnTable(tableName)
           .ToRequestBuilderFactory()
           .ToGetRequestBuilder();
@@ -84,14 +92,16 @@ public class ProductRepository
 
     public Task<Product?> Create(Product product) => _createProduct.Send(product, default);
 
-    public Task<Product?> GetById(string id) => _getProductByIdRequest.Send(id, default);
+    public Task<Product?> GetById(string id) => _getById.Send(id, default);
+    
+    public Task<Product?> DeleteById(string id) => _deleteById.Send(id, default);
 
     public Task<Product?> UpdatePrice(string id, decimal price) => _updatePrice.Send((id, price, DateTime.UtcNow), default);
 }
 
 // These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
 [DynamoDBMarshaller(AccessName = "Put")]
-[DynamoDBMarshaller(AccessName = "GetById", ArgumentType = typeof(string))]
+[DynamoDBMarshaller(AccessName = "WithIdArgument", ArgumentType = typeof(string))]
 [DynamoDBMarshaller(AccessName = "UpdatePrice", ArgumentType = typeof((string Id, decimal NewPrice, DateTime TimeStamp)))]
 [DynamoDBMarshaller(AccessName = "QueryByPrice", ArgumentType = typeof(decimal))]
 public partial record Product(

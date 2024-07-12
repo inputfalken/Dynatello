@@ -71,6 +71,7 @@ public static class RequestBuilderExtensions
         );
     }
 
+
     /// <summary>
     /// 
     /// </summary>
@@ -87,6 +88,115 @@ public static class RequestBuilderExtensions
         return new GetRequestBuilder<TArg>(
             source.TableAccess.TableName,
             source.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), y => rangeKeySelector(y))
+        );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static DeleteRequestBuilder<TArg> ToDeleteRequestBuilder<T, TArg, TReferences, TArgumentReferences>(
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+        where TArg : notnull
+    {
+        return new DeleteRequestBuilder<TArg>(
+            source.TableAccess.TableName,
+            source.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => y, null),
+            null
+        );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static DeleteRequestBuilder<TArg> ToDeleteRequestBuilder<T, TArg, TReferences, TArgumentReferences,
+        TPartition>(
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
+        Func<TArg, TPartition> partitionKeySelector)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+        where TPartition : notnull
+    {
+        return new DeleteRequestBuilder<TArg>(
+            source.TableAccess.TableName,
+            source.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), null),
+            null
+        );
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static DeleteRequestBuilder<TArg> ToDeleteRequestBuilder<T, TArg,
+        TReferences, TArgumentReferences, TPartition, TRange>(
+        this IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences> source,
+        Func<TArg, TPartition> partitionKeySelector,
+        Func<TArg, TRange> rangeKeySelector)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+        where TPartition : notnull
+        where TRange : notnull
+    {
+        return new DeleteRequestBuilder<TArg>(
+            source.TableAccess.TableName,
+            source.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), y => rangeKeySelector(y)),
+            null
+        );
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public static DeleteRequestBuilder<TArg> ToDeleteRequestBuilder<T, TArg, TReferences, TArgumentReferences>(
+        this ConditionExpression<T, TArg, TReferences, TArgumentReferences> source)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+        where TArg : notnull
+    {
+        return new DeleteRequestBuilder<TArg>(
+            source.Builder.TableAccess.TableName,
+            source.Builder.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => y, null),
+            source.Builder.TableAccess.Marshaller.ComposeAttributeExpression(null, source.Condition)
+        );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static DeleteRequestBuilder<TArg> ToDeleteRequestBuilder<T, TArg, TReferences, TArgumentReferences,
+        TPartition>(
+        this ConditionExpression<T, TArg, TReferences, TArgumentReferences> source,
+        Func<TArg, TPartition> partitionKeySelector)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+        where TPartition : notnull
+    {
+        return new DeleteRequestBuilder<TArg>(
+            source.Builder.TableAccess.TableName,
+            source.Builder.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), null),
+            source.Builder.TableAccess.Marshaller.ComposeAttributeExpression(null, source.Condition)
+        );
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static DeleteRequestBuilder<TArg> ToDeleteRequestBuilder<T, TArg,
+        TReferences, TArgumentReferences, TPartition, TRange>(
+        this ConditionExpression<T, TArg, TReferences, TArgumentReferences> source,
+        Func<TArg, TPartition> partitionKeySelector,
+        Func<TArg, TRange> rangeKeySelector)
+        where TReferences : IAttributeExpressionNameTracker
+        where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
+        where TPartition : notnull
+        where TRange : notnull
+    {
+        return new DeleteRequestBuilder<TArg>(
+            source.Builder.TableAccess.TableName,
+            source.Builder.TableAccess.Marshaller.PrimaryKeyMarshaller.ComposeKeys<TArg>(y => partitionKeySelector(y), y => rangeKeySelector(y)),
+            source.Builder.TableAccess.Marshaller.ComposeAttributeExpression(null, source.Condition)
         );
     }
 
