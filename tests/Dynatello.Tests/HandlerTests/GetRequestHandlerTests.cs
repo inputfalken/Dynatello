@@ -15,13 +15,14 @@ public class GetRequestHandlerTests
     {
         public DateTime? TimeStamp = null;
 
-        public Task<AmazonWebServiceResponse> Invoke(
+        public async Task<AmazonWebServiceResponse> Invoke(
             RequestContext requestContext,
             Func<RequestContext, Task<AmazonWebServiceResponse>> continuation
         )
         {
+            await Task.Delay(50);
             TimeStamp = DateTime.Now;
-            return continuation(requestContext);
+            return await continuation(requestContext);
         }
     }
 
@@ -39,14 +40,16 @@ public class GetRequestHandlerTests
 
         amazonDynamoDB
             .GetItemAsync(Arg.Any<GetItemRequest>())
-            .Returns(x =>
+            .Returns(async x =>
             {
-                Thread.Sleep(200);
+                await Task.Delay(200);
                 return response;
             });
 
         var pipelines = new TestPipeLine[]
         {
+            new TestPipeLine(),
+            new TestPipeLine(),
             new TestPipeLine(),
             new TestPipeLine(),
             new TestPipeLine()
@@ -62,6 +65,8 @@ public class GetRequestHandlerTests
                     x.RequestsPipelines.Add(pipelines[0]);
                     x.RequestsPipelines.Add(pipelines[1]);
                     x.RequestsPipelines.Add(pipelines[2]);
+                    x.RequestsPipelines.Add(pipelines[3]);
+                    x.RequestsPipelines.Add(pipelines[4]);
                     x.AmazonDynamoDB = amazonDynamoDB;
                 }
             )
@@ -69,11 +74,12 @@ public class GetRequestHandlerTests
         Assert.Equal(expected, actual);
         Assert.All(pipelines, x => Assert.NotNull(x.TimeStamp));
         var pipeLineTimestamps = pipelines.Select(x => x.TimeStamp!.Value).ToArray();
+        
         Assert.DoesNotContain(
             false,
             pipeLineTimestamps.Zip(
                 pipeLineTimestamps.Skip(1),
-                (x, y) => (x < y) && (y - x) < TimeSpan.FromMilliseconds(20) // ugly hack to verify that request comes last.
+                (x, y) => (x < y) && (y - x) < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
             )
         );
     }
