@@ -74,7 +74,7 @@ public class GetRequestHandlerTests
         Assert.Equal(expected, actual);
         Assert.All(pipelines, x => Assert.NotNull(x.TimeStamp));
         var pipeLineTimestamps = pipelines.Select(x => x.TimeStamp!.Value).ToArray();
-        
+
         Assert.DoesNotContain(
             false,
             pipeLineTimestamps.Zip(

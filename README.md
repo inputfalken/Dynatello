@@ -38,7 +38,10 @@ ProductRepository productRepository = new ProductRepository("PRODUCTS", new Amaz
 public class ProductRepository
 {
     private readonly IRequestHandler<string, Product?> _getById;
-    private readonly IRequestHandler< (string Id, decimal NewPrice, DateTime TimeStamp), Product?> _updatePrice;
+    private readonly IRequestHandler<
+        (string Id, decimal NewPrice, DateTime TimeStamp),
+        Product?
+    > _updatePrice;
     private readonly IRequestHandler<Product, Product?> _createProduct;
     private readonly IRequestHandler<decimal, IReadOnlyList<Product>> _queryByPrice;
     private readonly IRequestHandler<string, Product?> _deleteById;
@@ -62,7 +65,7 @@ public class ProductRepository
     {
         var requestLogger = new RequestLogger();
         _getById = Product
-            .WithIdArgument.OnTable(tableName)
+            .FromId.OnTable(tableName)
             .ToGetRequestHandler(
                 x => x.ToGetRequestBuilder(),
                 x =>
@@ -74,14 +77,14 @@ public class ProductRepository
             );
 
         _deleteById = Product
-            .WithIdArgument.OnTable(tableName)
+            .FromId.OnTable(tableName)
             .ToDeleteRequestHandler(
                 x => x.ToDeleteRequestBuilder(),
                 x => x.AmazonDynamoDB = amazonDynamoDb
             );
 
         _updatePrice = Product
-            .UpdatePrice.OnTable(tableName)
+            .FromUpdatePricePayload.OnTable(tableName)
             .ToUpdateRequestHandler(
                 x =>
                     x.WithUpdateExpression(
@@ -95,7 +98,7 @@ public class ProductRepository
             );
 
         _createProduct = Product
-            .Put.OnTable(tableName)
+            .FromProduct.OnTable(tableName)
             .ToPutRequestHandler(
                 x =>
                     x.WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
@@ -104,7 +107,7 @@ public class ProductRepository
             );
 
         _queryByPrice = Product
-            .QueryByPrice.OnTable(tableName)
+            .FromPrice.OnTable(tableName)
             .ToQueryRequestHandler(
                 x =>
                     x.WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
@@ -117,7 +120,7 @@ public class ProductRepository
 
         // You can also use a RequestBuilder if you want to handle the response yourself.
         GetRequestBuilder<string> getProductByIdRequestBuilder = Product
-            .WithIdArgument.OnTable(tableName)
+            .FromId.OnTable(tableName)
             .ToRequestBuilderFactory()
             .ToGetRequestBuilder();
     }
@@ -136,10 +139,13 @@ public class ProductRepository
 }
 
 // These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
-[DynamoDBMarshaller(AccessName = "Put")]
-[DynamoDBMarshaller(AccessName = "WithIdArgument", ArgumentType = typeof(string))]
-[DynamoDBMarshaller(AccessName = "UpdatePrice", ArgumentType = typeof((string Id, decimal NewPrice, DateTime TimeStamp)))]
-[DynamoDBMarshaller(AccessName = "QueryByPrice", ArgumentType = typeof(decimal))]
+[DynamoDBMarshaller(AccessName = "FromProduct")]
+[DynamoDBMarshaller(AccessName = "FromId", ArgumentType = typeof(string))]
+[DynamoDBMarshaller(
+    AccessName = "FromUpdatePricePayload",
+    ArgumentType = typeof((string Id, decimal NewPrice, DateTime TimeStamp))
+)]
+[DynamoDBMarshaller(AccessName = "FromPrice", ArgumentType = typeof(decimal))]
 public partial record Product(
     [property: DynamoDBHashKey, DynamoDBGlobalSecondaryIndexRangeKey(Product.PriceIndex)] string Id,
     [property: DynamoDBGlobalSecondaryIndexHashKey(Product.PriceIndex)] decimal Price,
