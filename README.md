@@ -7,8 +7,7 @@ A reflection free & generic typed solution to send requests towards dynamodb wit
 
 * Builder patterns to create request builders.
 * Request handlers that perform the DynamoDB request and handles the response.
-    * TODO add `response` middlewares.
-    * TODO add optional error handlers.
+  *  Middlware Support through `IRequestPipeline`. 
 
 ## Installation
 
