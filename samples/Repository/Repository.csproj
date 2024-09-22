@@ -12,5 +12,4 @@
         <ProjectReference Include="..\..\src\Dynatello\Dynatello.csproj" />
     </ItemGroup>
 
-
 </Project>
