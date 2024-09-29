@@ -64,7 +64,7 @@ public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryR
             ExpressionAttributeNames = attributeExpression.Names,
             TableName = TableName,
             IndexName = null,
-            ProjectionExpression = null
+            ProjectionExpression = null,
         };
 
         if (ReturnConsumedCapacity is not null)

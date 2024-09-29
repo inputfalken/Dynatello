@@ -58,7 +58,7 @@ public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemR
             ConditionalOperator = null,
             ConditionExpression = null,
             ExpressionAttributeNames = null,
-            ExpressionAttributeValues = null
+            ExpressionAttributeValues = null,
         };
 
         if (ReturnValues is not null)

@@ -22,7 +22,7 @@ public class DeleteRequestHandlerTests
                 new DeleteItemResponse
                 {
                     HttpStatusCode = System.Net.HttpStatusCode.OK,
-                    Attributes = Cat.GetById.Marshall(expected)
+                    Attributes = Cat.GetById.Marshall(expected),
                 }
             );
 

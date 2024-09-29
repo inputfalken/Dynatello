@@ -81,7 +81,7 @@ public readonly record struct UpdateRequestBuilder<T> : IRequestBuilder<T, Updat
             ExpressionAttributeValues = expression.Values,
             Expected = null,
             AttributeUpdates = null,
-            ConditionalOperator = null
+            ConditionalOperator = null,
         };
 
         if (ReturnValues is not null)

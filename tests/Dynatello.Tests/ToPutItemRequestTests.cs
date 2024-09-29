@@ -62,10 +62,10 @@ public partial class ToPutItemRequestTests
                                                 nameof(user.Metadata.ModifiedAt),
                                                 new AttributeValue
                                                 {
-                                                    S = user.Metadata.ModifiedAt.ToString("O")
+                                                    S = user.Metadata.ModifiedAt.ToString("O"),
                                                 }
-                                            }
-                                        }
+                                            },
+                                        },
                                     }
                                 },
                             },
@@ -75,7 +75,7 @@ public partial class ToPutItemRequestTests
                             ReturnConsumedCapacity = null,
                             ConditionalOperator = null,
                             ReturnItemCollectionMetrics = null,
-                            ReturnValuesOnConditionCheckFailure = null
+                            ReturnValuesOnConditionCheckFailure = null,
                         }
                     );
             });
@@ -107,7 +107,7 @@ public partial class ToPutItemRequestTests
                             ExpressionAttributeNames = new Dictionary<string, string>
                             {
                                 { "#Email", nameof(user.Email) },
-                                { "#Firstname", nameof(user.Firstname) }
+                                { "#Firstname", nameof(user.Firstname) },
                             },
                             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                             {
@@ -118,7 +118,7 @@ public partial class ToPutItemRequestTests
                                 {
                                     ":p2",
                                     new AttributeValue { S = user.Firstname }
-                                }
+                                },
                             },
                             Item = new Dictionary<string, AttributeValue>
                             {
@@ -148,10 +148,10 @@ public partial class ToPutItemRequestTests
                                                 nameof(user.Metadata.ModifiedAt),
                                                 new AttributeValue
                                                 {
-                                                    S = user.Metadata.ModifiedAt.ToString("O")
+                                                    S = user.Metadata.ModifiedAt.ToString("O"),
                                                 }
-                                            }
-                                        }
+                                            },
+                                        },
                                     }
                                 },
                             },
@@ -161,7 +161,7 @@ public partial class ToPutItemRequestTests
                             ReturnConsumedCapacity = null,
                             ConditionalOperator = null,
                             ReturnItemCollectionMetrics = null,
-                            ReturnValuesOnConditionCheckFailure = null
+                            ReturnValuesOnConditionCheckFailure = null,
                         }
                     );
             });

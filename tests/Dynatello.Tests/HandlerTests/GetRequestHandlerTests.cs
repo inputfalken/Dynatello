@@ -34,7 +34,7 @@ public class GetRequestHandlerTests
         {
             HttpStatusCode = System.Net.HttpStatusCode.OK,
             IsItemSet = true,
-            Item = Cat.GetById.Marshall(expected)
+            Item = Cat.GetById.Marshall(expected),
         };
         var amazonDynamoDB = Substitute.For<IAmazonDynamoDB>();
 
@@ -52,7 +52,7 @@ public class GetRequestHandlerTests
             new TestPipeLine(),
             new TestPipeLine(),
             new TestPipeLine(),
-            new TestPipeLine()
+            new TestPipeLine(),
         };
 
         Assert.All(pipelines, x => Assert.Null(x.TimeStamp));
@@ -97,7 +97,7 @@ public class GetRequestHandlerTests
                 {
                     HttpStatusCode = System.Net.HttpStatusCode.OK,
                     IsItemSet = true,
-                    Item = Cat.GetById.Marshall(expected)
+                    Item = Cat.GetById.Marshall(expected),
                 }
             );
 
@@ -120,7 +120,7 @@ public class GetRequestHandlerTests
 
         amazonDynamoDB
             .GetItemAsync(Arg.Any<GetItemRequest>())
-            .Returns(new GetItemResponse { IsItemSet = false, });
+            .Returns(new GetItemResponse { IsItemSet = false });
 
         var actual = await Cat
             .GetById.OnTable("TABLE")

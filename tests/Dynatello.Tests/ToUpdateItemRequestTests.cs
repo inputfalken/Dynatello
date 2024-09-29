@@ -64,9 +64,10 @@ public partial class ToUpdateItemRequestTests
                         Expected = null,
                         ExpressionAttributeNames = new Dictionary<string, string>
                         {
-                            { "#Email", nameof(User.Email) },
                             { "#Id", nameof(User.Id) },
-                            { "#Metadata.#ModifiedAt", nameof(User.Metadata.ModifiedAt) }
+                            { "#Email", nameof(User.Email) },
+                            { "#Metadata", nameof(User.Metadata) },
+                            { "#ModifiedAt", nameof(User.Metadata.ModifiedAt) },
                         },
                         ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                         {
@@ -81,7 +82,7 @@ public partial class ToUpdateItemRequestTests
                             {
                                 ":p3",
                                 new AttributeValue { S = updateUserEmail.UserId }
-                            }
+                            },
                         },
                         Key = new Dictionary<string, AttributeValue>
                         {
@@ -92,14 +93,14 @@ public partial class ToUpdateItemRequestTests
                             {
                                 nameof(User.Email),
                                 new AttributeValue { S = updateUserEmail.UserEmail }
-                            }
+                            },
                         },
                         ReturnConsumedCapacity = null,
                         ReturnItemCollectionMetrics = null,
                         ReturnValues = null,
                         ReturnValuesOnConditionCheckFailure = null,
                         TableName = "TABLE",
-                        UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2"
+                        UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2",
                     }
                 );
     }
@@ -132,7 +133,8 @@ public partial class ToUpdateItemRequestTests
                             ExpressionAttributeNames = new Dictionary<string, string>
                             {
                                 { "#Email", nameof(User.Email) },
-                                { "#Metadata.#ModifiedAt", nameof(User.Metadata.ModifiedAt) }
+                                { "#Metadata", nameof(User.Metadata) },
+                                { "#ModifiedAt", nameof(User.Metadata.ModifiedAt) },
                             },
                             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                             {
@@ -144,9 +146,9 @@ public partial class ToUpdateItemRequestTests
                                     ":p2",
                                     new AttributeValue
                                     {
-                                        S = updateUserEmail.TimeStamp.ToString("O")
+                                        S = updateUserEmail.TimeStamp.ToString("O"),
                                     }
-                                }
+                                },
                             },
                             Key = new Dictionary<string, AttributeValue>
                             {
@@ -157,14 +159,14 @@ public partial class ToUpdateItemRequestTests
                                 {
                                     nameof(User.Email),
                                     new AttributeValue { S = updateUserEmail.UserEmail }
-                                }
+                                },
                             },
                             ReturnConsumedCapacity = null,
                             ReturnItemCollectionMetrics = null,
                             ReturnValues = null,
                             ReturnValuesOnConditionCheckFailure = null,
                             TableName = "TABLE",
-                            UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2"
+                            UpdateExpression = "SET #Email = :p1, #Metadata.#ModifiedAt = :p2",
                         }
                     )
             );
@@ -198,7 +200,7 @@ public partial class ToUpdateItemRequestTests
                             ExpressionAttributeNames = new Dictionary<string, string>
                             {
                                 { "#Email", nameof(User.Email) },
-                                { "#Firstname", nameof(User.Firstname) }
+                                { "#Firstname", nameof(User.Firstname) },
                             },
                             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                             {
@@ -209,7 +211,7 @@ public partial class ToUpdateItemRequestTests
                                 {
                                     ":p2",
                                     new AttributeValue { S = x.Firstname }
-                                }
+                                },
                             },
                             Key = new Dictionary<string, AttributeValue>
                             {
@@ -220,14 +222,14 @@ public partial class ToUpdateItemRequestTests
                                 {
                                     nameof(User.Email),
                                     new AttributeValue { S = x.Email }
-                                }
+                                },
                             },
                             ReturnConsumedCapacity = null,
                             ReturnItemCollectionMetrics = null,
                             ReturnValues = null,
                             ReturnValuesOnConditionCheckFailure = null,
                             TableName = "TABLE",
-                            UpdateExpression = "SET #Email = :p1, #Firstname = :p2"
+                            UpdateExpression = "SET #Email = :p1, #Firstname = :p2",
                         }
                     )
             );
@@ -272,7 +274,7 @@ public partial class ToUpdateItemRequestTests
                         {
                             { "#Email", "Email" },
                             { "#Firstname", "Firstname" },
-                            { "#Id", "Id" }
+                            { "#Id", "Id" },
                         },
                         ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
                         {
@@ -287,7 +289,7 @@ public partial class ToUpdateItemRequestTests
                             {
                                 ":p3",
                                 new AttributeValue { S = x.Id }
-                            }
+                            },
                         },
                         Key = new Dictionary<string, AttributeValue>
                         {
@@ -298,14 +300,14 @@ public partial class ToUpdateItemRequestTests
                             {
                                 "Email",
                                 new AttributeValue { S = x.Email }
-                            }
+                            },
                         },
                         ReturnConsumedCapacity = null,
                         ReturnItemCollectionMetrics = null,
                         ReturnValues = null,
                         ReturnValuesOnConditionCheckFailure = null,
                         TableName = "TABLE",
-                        UpdateExpression = "SET #Email = :p1, #Firstname = :p2"
+                        UpdateExpression = "SET #Email = :p1, #Firstname = :p2",
                     }
                 );
     }

@@ -30,7 +30,7 @@ public class ToQueryRequestTests
                             TableName = "TABLE",
                             ExpressionAttributeNames = new Dictionary<string, string>
                             {
-                                { "#Id", nameof(Cat.Id) }
+                                { "#Id", nameof(Cat.Id) },
                             },
 
                             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -38,7 +38,7 @@ public class ToQueryRequestTests
                                 {
                                     ":p1",
                                     new AttributeValue { S = tuple.Id.ToString() }
-                                }
+                                },
                             },
                             KeyConditionExpression = "#Id = :p1",
                             KeyConditions = null,
@@ -54,7 +54,7 @@ public class ToQueryRequestTests
                             QueryFilter = null,
                             ExclusiveStartKey = new Dictionary<string, AttributeValue>(),
                             IsLimitSet = false,
-                            ScanIndexForward = false
+                            ScanIndexForward = false,
                         }
                     );
             });
@@ -83,7 +83,7 @@ public class ToQueryRequestTests
                             ExpressionAttributeNames = new Dictionary<string, string>
                             {
                                 { "#Id", nameof(Cat.Id) },
-                                { "#Cuteness", nameof(Cat.Cuteness) }
+                                { "#Cuteness", nameof(Cat.Cuteness) },
                             },
 
                             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -98,9 +98,9 @@ public class ToQueryRequestTests
                                     {
                                         N = tuple.MinimumCuteness.ToString(
                                             CultureInfo.InvariantCulture
-                                        )
+                                        ),
                                     }
-                                }
+                                },
                             },
                             KeyConditionExpression = "#Id = :p1",
                             KeyConditions = null,
@@ -116,7 +116,7 @@ public class ToQueryRequestTests
                             QueryFilter = null,
                             ExclusiveStartKey = new Dictionary<string, AttributeValue>(),
                             IsLimitSet = false,
-                            ScanIndexForward = false
+                            ScanIndexForward = false,
                         }
                     );
             });

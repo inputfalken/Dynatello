@@ -49,7 +49,7 @@ public readonly record struct GetRequestBuilder<T> : IRequestBuilder<T, GetItemR
         {
             ReturnConsumedCapacity = ReturnConsumedCapacity,
             TableName = TableName,
-            Key = _keysSelector(arg)
+            Key = _keysSelector(arg),
         };
 
         if (ConsistentRead is { } consistentRead)

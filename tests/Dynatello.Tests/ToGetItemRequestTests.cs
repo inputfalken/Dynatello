@@ -90,14 +90,14 @@ public class ToGetItemRequestTests
                                 {
                                     nameof(Cat.Id),
                                     new AttributeValue { S = x.ToString() }
-                                }
+                                },
                             },
                             TableName = "TABLE",
                             ConsistentRead = false,
                             ExpressionAttributeNames = new Dictionary<string, string>(),
                             ProjectionExpression = null,
                             ReturnConsumedCapacity = null,
-                            AttributesToGet = new List<string>()
+                            AttributesToGet = new List<string>(),
                         }
                     )
             );
@@ -129,14 +129,14 @@ public class ToGetItemRequestTests
                                 {
                                     nameof(Cat.HomeId),
                                     new AttributeValue { S = x.RangeKey.ToString() }
-                                }
+                                },
                             },
                             TableName = "TABLE",
                             ConsistentRead = false,
                             ExpressionAttributeNames = new Dictionary<string, string>(),
                             ProjectionExpression = null,
                             ReturnConsumedCapacity = null,
-                            AttributesToGet = new List<string>()
+                            AttributesToGet = new List<string>(),
                         }
                     )
             );

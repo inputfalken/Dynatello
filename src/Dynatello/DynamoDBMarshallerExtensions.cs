@@ -22,7 +22,7 @@ public static class DynamoDBMarshallerExtensions
             (not null, not null) => y => source.Keys(partitionKeySelector(y), rangeKeySelector(y)),
             (not null, null) => y => source.PartitionKey(partitionKeySelector(y)),
             (null, not null) => y => source.RangeKey(rangeKeySelector(y)),
-            (null, null) => throw new ArgumentNullException("")
+            (null, null) => throw new ArgumentNullException(""),
         };
     }
 
@@ -44,7 +44,7 @@ public static class DynamoDBMarshallerExtensions
             (null, null) => throw new ArgumentNullException(""),
             (not null, not null) => y => source.ToAttributeExpression(y, update, condition),
             (not null, null) => y => source.ToAttributeExpression(y, update),
-            (null, not null) => y => source.ToAttributeExpression(y, condition)
+            (null, not null) => y => source.ToAttributeExpression(y, condition),
         };
     }
 }

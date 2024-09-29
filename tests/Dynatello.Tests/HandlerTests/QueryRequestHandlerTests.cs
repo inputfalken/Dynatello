@@ -22,7 +22,7 @@ public class QueryRequestHandlerTests
                 new QueryResponse
                 {
                     HttpStatusCode = System.Net.HttpStatusCode.OK,
-                    Items = expected.Select(x => Cat.QueryWithCuteness.Marshall(x)).ToList()
+                    Items = expected.Select(x => Cat.QueryWithCuteness.Marshall(x)).ToList(),
                 }
             );
 
@@ -33,7 +33,7 @@ public class QueryRequestHandlerTests
                     x.WithKeyConditionExpression(((x, y) => $"{x.Id} = {y.Id}"))
                         .ToQueryRequestBuilder() with
                     {
-                        IndexName = "INDEX"
+                        IndexName = "INDEX",
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
@@ -63,13 +63,13 @@ public class QueryRequestHandlerTests
                                 {
                                     nameof(Cat.Id),
                                     new AttributeValue() { S = lastId }
-                                }
+                                },
                             };
                     return new
                     {
                         LastId = lastId,
                         Key = key,
-                        Elements = elements
+                        Elements = elements,
                     };
                 }
             )
@@ -90,7 +90,7 @@ public class QueryRequestHandlerTests
                         .First()
                         .Elements.Select(x => Cat.QueryWithCuteness.Marshall(x))
                         .ToList(),
-                    LastEvaluatedKey = chunks.First().Key
+                    LastEvaluatedKey = chunks.First().Key,
                 },
                 chunks
                     .Skip(1)
@@ -98,7 +98,7 @@ public class QueryRequestHandlerTests
                     {
                         HttpStatusCode = System.Net.HttpStatusCode.OK,
                         Items = x.Elements.Select(x => Cat.QueryWithCuteness.Marshall(x)).ToList(),
-                        LastEvaluatedKey = x.Key
+                        LastEvaluatedKey = x.Key,
                     })
                     .ToArray()
             );
@@ -110,7 +110,7 @@ public class QueryRequestHandlerTests
                     x.WithKeyConditionExpression(((x, y) => $"{x.Id} = {y.Id}"))
                         .ToQueryRequestBuilder() with
                     {
-                        IndexName = "INDEX"
+                        IndexName = "INDEX",
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )

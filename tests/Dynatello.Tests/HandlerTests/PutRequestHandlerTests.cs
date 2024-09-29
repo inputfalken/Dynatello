@@ -25,7 +25,7 @@ public class PutRequestHandlerTests
                 new PutItemResponse
                 {
                     HttpStatusCode = System.Net.HttpStatusCode.OK,
-                    Attributes = Cat.Put.Marshall(expected)
+                    Attributes = Cat.Put.Marshall(expected),
                 }
             );
 
@@ -50,7 +50,7 @@ public class PutRequestHandlerTests
 
         amazonDynamoDB
             .PutItemAsync(Arg.Any<PutItemRequest>())
-            .Returns(new PutItemResponse { HttpStatusCode = System.Net.HttpStatusCode.OK, });
+            .Returns(new PutItemResponse { HttpStatusCode = System.Net.HttpStatusCode.OK });
 
         var actual = await Cat
             .Put.OnTable("TABLE")
@@ -58,7 +58,9 @@ public class PutRequestHandlerTests
                 x =>
                     x.ToPutRequestBuilder() with
                     {
-                        ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null
+                        ReturnValues = returnValue is not null
+                            ? new ReturnValue(returnValue)
+                            : null,
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )

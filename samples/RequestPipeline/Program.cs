@@ -38,7 +38,7 @@ public class RequestDurationConsoleLogger : IRequestPipeLine
 
         var result = await continuation(requestContext);
         Console.WriteLine($"Duration: {stopwatch.Elapsed}");
-        
+
         return result;
     }
 }

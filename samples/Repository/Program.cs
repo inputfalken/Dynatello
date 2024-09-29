@@ -85,7 +85,7 @@ public partial class ProductRepository
                     x.WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
                         .ToQueryRequestBuilder() with
                     {
-                        IndexName = Product.PriceIndex
+                        IndexName = Product.PriceIndex,
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDb
             );

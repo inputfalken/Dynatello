@@ -70,7 +70,7 @@ internal static class RequestPipelineExtensons
             _ when pipelines == Enumerable.Empty<T>() => false,
             _ when pipelines == Array.Empty<T>() => false,
             _ when pipelines.TryGetNonEnumeratedCount(out var count) => count != 0,
-            _ => true
+            _ => true,
         };
     }
 }

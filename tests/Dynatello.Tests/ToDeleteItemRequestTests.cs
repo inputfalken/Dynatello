@@ -96,7 +96,7 @@ public class ToDeleteItemRequestTests
                                 {
                                     nameof(Cat.Id),
                                     new AttributeValue { S = x.ToString() }
-                                }
+                                },
                             },
                             TableName = "TABLE",
                             ConditionExpression = "#Id = :p1",
@@ -105,11 +105,11 @@ public class ToDeleteItemRequestTests
                                 {
                                     ":p1",
                                     new AttributeValue() { S = x.ToString() }
-                                }
+                                },
                             },
                             ExpressionAttributeNames = new Dictionary<string, string>()
                             {
-                                { "#Id", "Id" }
+                                { "#Id", "Id" },
                             },
                         }
                     )
@@ -143,7 +143,7 @@ public class ToDeleteItemRequestTests
                                 {
                                     nameof(Cat.HomeId),
                                     new AttributeValue { S = x.RangeKey.ToString() }
-                                }
+                                },
                             },
                             TableName = "TABLE",
                             ReturnConsumedCapacity = null,
@@ -157,12 +157,12 @@ public class ToDeleteItemRequestTests
                                 {
                                     ":p2",
                                     new AttributeValue() { S = x.RangeKey.ToString() }
-                                }
+                                },
                             },
                             ExpressionAttributeNames = new Dictionary<string, string>()
                             {
                                 { "#Id", "Id" },
-                                { "#HomeId", "HomeId" }
+                                { "#HomeId", "HomeId" },
                             },
                         }
                     )
@@ -251,7 +251,7 @@ public class ToDeleteItemRequestTests
                                 {
                                     nameof(Cat.Id),
                                     new AttributeValue { S = x.ToString() }
-                                }
+                                },
                             },
                             TableName = "TABLE",
                             ExpressionAttributeNames = new Dictionary<string, string>(),
@@ -287,7 +287,7 @@ public class ToDeleteItemRequestTests
                                 {
                                     nameof(Cat.HomeId),
                                     new AttributeValue { S = x.RangeKey.ToString() }
-                                }
+                                },
                             },
                             TableName = "TABLE",
                             ExpressionAttributeNames = new Dictionary<string, string>(),

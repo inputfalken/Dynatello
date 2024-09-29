@@ -27,7 +27,7 @@ public class UpdateRequestHandlerTests
                 new UpdateItemResponse
                 {
                     HttpStatusCode = System.Net.HttpStatusCode.OK,
-                    Attributes = Cat.UpdateHome.Marshall(expected)
+                    Attributes = Cat.UpdateHome.Marshall(expected),
                 }
             );
 
@@ -38,7 +38,7 @@ public class UpdateRequestHandlerTests
                     x.WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
                         .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
                     {
-                        ReturnValues = new ReturnValue(returnValue)
+                        ReturnValues = new ReturnValue(returnValue),
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
@@ -57,7 +57,7 @@ public class UpdateRequestHandlerTests
 
         amazonDynamoDB
             .UpdateItemAsync(Arg.Any<UpdateItemRequest>())
-            .Returns(new UpdateItemResponse { HttpStatusCode = System.Net.HttpStatusCode.OK, });
+            .Returns(new UpdateItemResponse { HttpStatusCode = System.Net.HttpStatusCode.OK });
 
         var actual = await Cat
             .UpdateHome.OnTable("TABLE")
@@ -66,7 +66,9 @@ public class UpdateRequestHandlerTests
                     x.WithUpdateExpression((db, arg) => $"{db.HomeId} = {arg}")
                         .ToUpdateItemRequestBuilder((x, y) => x.PartitionKey(y.Id)) with
                     {
-                        ReturnValues = returnValue is not null ? new ReturnValue(returnValue) : null
+                        ReturnValues = returnValue is not null
+                            ? new ReturnValue(returnValue)
+                            : null,
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
