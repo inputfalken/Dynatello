@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Dynatello\Dynatello.csproj" />
+        <PackageReference Include="AutoFixture" Version="4.18.0" />
     </ItemGroup>
 
 </Project>

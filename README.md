@@ -110,121 +110,161 @@ public partial record Cat(string Id, string Name, double Cuteness);
 Isolate DynamoDB code to a repository class.
 
 ```csharp
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using DynamoDBGenerator.Attributes;
-using Dynatello;
-using Dynatello.Builders;
-using Dynatello.Builders.Types;
-using Dynatello.Handlers;
-
-ProductRepository productRepository = new ProductRepository("PRODUCTS", new AmazonDynamoDBClient());
-
-// These attributes is what makes the source generator kick in. Make sure to have the class 'partial' as well.
-[DynamoDBMarshaller(EntityType = typeof(Product), AccessName = "FromProduct")]
-[DynamoDBMarshaller(
-    EntityType = typeof(Product),
-    AccessName = "FromId",
-    ArgumentType = typeof(string)
-)]
-[DynamoDBMarshaller(
-    EntityType = typeof(Product),
-    AccessName = "FromUpdatePricePayload",
-    ArgumentType = typeof((string Id, decimal NewPrice, DateTime TimeStamp))
-)]
-[DynamoDBMarshaller(
-    EntityType = typeof(Product),
-    AccessName = "FromPrice",
-    ArgumentType = typeof(decimal)
-)]
-public partial class ProductRepository
+public class EmployeeRepository
 {
-    private readonly IRequestHandler<string, Product?> _getById;
+    private readonly IRequestHandler<(string department, string email), Employee?> _getEmployee;
+    private readonly IRequestHandler<(string department, string email), Employee?> _deleteEmployee;
+    private readonly IRequestHandler<string, IReadOnlyList<Employee>> _queryByEmail;
+    private readonly IRequestHandler<Employee, Employee?> _createEmployee;
     private readonly IRequestHandler<
-        (string Id, decimal NewPrice, DateTime TimeStamp),
-        Product?
-    > _updatePrice;
-    private readonly IRequestHandler<Product, Product?> _createProduct;
-    private readonly IRequestHandler<decimal, IReadOnlyList<Product>> _queryByPrice;
-    private readonly IRequestHandler<string, Product?> _deleteById;
+        (string Department, string EmailPrefix, DateTime MustBeLessThan),
+        IReadOnlyList<Employee>
+    > _queryByDepartment;
+    private readonly IRequestHandler<
+        (string Department, string Email, string NewLastname),
+        Employee?
+    > _updateLastname;
 
-    public ProductRepository(string tableName, IAmazonDynamoDB amazonDynamoDb)
+    public EmployeeRepository(string table, IAmazonDynamoDB dynamoDB)
     {
-        _getById = FromId
-            .OnTable(tableName)
+        _deleteEmployee = Employee
+            .GetEmployee.OnTable(table)
+            .ToDeleteRequestHandler(
+                x => x.ToDeleteRequestBuilder(y => y.department, y => y.email),
+                x => x.AmazonDynamoDB = dynamoDB
+            );
+
+        _getEmployee = Employee
+            .GetEmployee.OnTable(table)
             .ToGetRequestHandler(
-                x => x.ToGetRequestBuilder(),
+                x => x.ToGetRequestBuilder(y => y.department, y => y.email),
+                x => x.AmazonDynamoDB = dynamoDB
+            );
+
+        _queryByEmail = Employee
+            .GetByEmail.OnTable(table)
+            .ToQueryRequestHandler(
+                x =>
+                    x.WithKeyConditionExpression((x, y) => $"{x.Email} = {y} ")
+                        .ToQueryRequestBuilder() with
+                    {
+                        IndexName = "EmailLookup",
+                    },
+                x => x.AmazonDynamoDB = dynamoDB
+            );
+
+        _createEmployee = Employee
+            .Create.OnTable(table)
+            .ToPutRequestHandler(x => x.ToPutRequestBuilder(), x => x.AmazonDynamoDB = dynamoDB);
+
+        _queryByDepartment = Employee
+            .Query.OnTable(table)
+            .ToQueryRequestHandler(
+                x =>
+                    x.WithKeyConditionExpression(
+                            (x, y) =>
+                                $"{x.Department} = {y.Department} and begins_with({x.Email}, {y.EmailPrefix})"
+                        )
+                        .WithFilterExpression(
+                            (x, y) => $"{x.Metadata.Timestamp} < {y.MustBeLessThan}"
+                        )
+                        .ToQueryRequestBuilder(),
                 x =>
                 {
-                    x.AmazonDynamoDB = amazonDynamoDb;
+                    x.RequestsPipelines.Add(new RequestLogAnalyzer());
+                    x.AmazonDynamoDB = dynamoDB;
                 }
             );
 
-        _deleteById = FromId
-            .OnTable(tableName)
-            .ToDeleteRequestHandler(
-                x => x.ToDeleteRequestBuilder(),
-                x => x.AmazonDynamoDB = amazonDynamoDb
-            );
-
-        _updatePrice = FromUpdatePricePayload
-            .OnTable(tableName)
+        _updateLastname = Employee
+            .UpdateLastname.OnTable(table)
             .ToUpdateRequestHandler(
                 x =>
-                    x.WithUpdateExpression(
-                            (db, arg) =>
-                                $"SET {db.Price} = {arg.NewPrice}, {db.Metadata.ModifiedAt} = {arg.TimeStamp}"
-                        ) // Specify the update operation
-                        .ToUpdateItemRequestBuilder(
-                            ((marshaller, arg) => marshaller.PartitionKey(arg.Id))
-                        ),
-                x => x.AmazonDynamoDB = amazonDynamoDb
-            );
-
-        _createProduct = FromProduct
-            .OnTable(tableName)
-            .ToPutRequestHandler(
-                x =>
-                    x.WithConditionExpression((db, arg) => $"{db.Id} <> {arg.Id}") // Ensure we don't have an existing Product in DynamoDB
-                        .ToPutRequestBuilder(),
-                x => x.AmazonDynamoDB = amazonDynamoDb
-            );
-
-        _queryByPrice = FromPrice
-            .OnTable(tableName)
-            .ToQueryRequestHandler(
-                x =>
-                    x.WithKeyConditionExpression((db, arg) => $"{db.Price} = {arg}")
-                        .ToQueryRequestBuilder() with
+                    x.WithUpdateExpression((x, y) => $"SET {x.LastName} = {y.NewLastname}")
+                        .ToUpdateItemRequestBuilder((x, y) => x.Keys(y.Department, y.Email)) with
                     {
-                        IndexName = Product.PriceIndex
+                        ReturnValues = ReturnValue.ALL_NEW,
                     },
-                x => x.AmazonDynamoDB = amazonDynamoDb
+                x => x.AmazonDynamoDB = dynamoDB
             );
     }
 
-    public Task<IReadOnlyList<Product>> SearchByPrice(decimal price) =>
-        _queryByPrice.Send(price, default);
+    private static Fixture Fixture = new();
 
-    public Task<Product?> Create(Product product) => _createProduct.Send(product, default);
+    public Task<Employee?> GetPersonById(
+        string department,
+        string email,
+        CancellationToken cancellationToken
+    ) => _getEmployee.Send((department, email), cancellationToken);
 
-    public Task<Product?> GetById(string id) => _getById.Send(id, default);
+    public Task<IReadOnlyList<Employee>> SearchByEmail(
+        string email,
+        CancellationToken cancellationToken
+    ) => _queryByEmail.Send(email, cancellationToken);
 
-    public Task<Product?> DeleteById(string id) => _deleteById.Send(id, default);
+    public Task<Employee?> CreateEmployee(Employee employee, CancellationToken cancellationToken) =>
+        _createEmployee.Send(employee, cancellationToken);
 
-    public Task<Product?> UpdatePrice(string id, decimal price) =>
-        _updatePrice.Send((id, price, DateTime.UtcNow), default);
+    public Task<IReadOnlyList<Employee>> QueryByDepartment(
+        string department,
+        string emailStartsWith,
+        DateTime updatedBefore,
+        CancellationToken cancellationToken
+    ) => _queryByDepartment.Send((department, emailStartsWith, updatedBefore), cancellationToken);
+
+    public Task<Employee?> UpdateLastName(
+        string department,
+        string email,
+        string lastname,
+        CancellationToken cancellationToken
+    ) => _updateLastname.Send((department, email, lastname), cancellationToken);
+
+    public Task DeleteEmployee(
+        string department,
+        string email,
+        CancellationToken cancellationToken
+    ) => _deleteEmployee.Send((department, email), cancellationToken);
+
+    public async Task GenerateEmployeesInDeparment(
+        string department,
+        int count,
+        CancellationToken cancellationToken
+    )
+    {
+        for (var i = 0; i < count; i++)
+        {
+            var employee = Fixture.Create<Employee>() with
+            {
+                Department = department,
+                Metadata = new Metadata(DateTime.UtcNow),
+            };
+
+            await _createEmployee.Send(employee, cancellationToken);
+        }
+    }
 }
 
-public record Product(
-    [property: DynamoDBHashKey, DynamoDBGlobalSecondaryIndexRangeKey(Product.PriceIndex)] string Id,
-    [property: DynamoDBGlobalSecondaryIndexHashKey(Product.PriceIndex)] decimal Price,
-    string Description,
-    Product.MetadataEntity Metadata
-)
-{
-    public const string PriceIndex = "PriceIndex";
+[DynamoDBMarshaller(AccessName = "GetByEmail", ArgumentType = typeof(string))]
+[DynamoDBMarshaller(
+    AccessName = "GetEmployee",
+    ArgumentType = typeof((string department, string email))
+)]
+[DynamoDBMarshaller(
+    AccessName = "Query",
+    ArgumentType = typeof((string Department, string EmailPrefix, DateTime MustBeLessThan))
+)]
+[DynamoDBMarshaller(AccessName = "Create")]
+[DynamoDBMarshaller(
+    AccessName = "UpdateLastname",
+    ArgumentType = typeof((string Department, string Email, string NewLastname))
+)]
+public partial record Employee(
+    [property: DynamoDBHashKey] string Department,
+    [property: DynamoDBRangeKey, DynamoDBGlobalSecondaryIndexHashKey("EmailLookup")] string Email,
+    string LastName,
+    string[] Skills,
+    Metadata Metadata
+);
 
-    public record MetadataEntity(DateTime CreatedAt, DateTime ModifiedAt);
-}
+public record Metadata(DateTime Timestamp);
 ```
