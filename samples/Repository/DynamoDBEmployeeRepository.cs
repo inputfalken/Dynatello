@@ -1,103 +1,9 @@
-# Dynatello
+using Amazon.DynamoDBv2;
+using Dynatello;
+using Dynatello.Builders;
+using Dynatello.Builders.Types;
+using Dynatello.Handlers;
 
-## What does the library do?
-
-Offers a unified API based on the source generated low-level API provided from [DynamoDB.SourceGenerator](https://github.com/inputfalken/DynamoDB.SourceGenerator). 
-
-## Features
-
-* Builder patterns to create request builders.
-* Request handlers that perform the DynamoDB request and handles the response.
-  *  Middlware Support through `IRequestPipeline`. 
-
-## Installation
-
-Add the following NuGet package as a dependency to your project.
-
-[![DynamoDBGenerator][1]][2]
-
-[1]: https://img.shields.io/nuget/v/Dynatello.svg?label=Dynatello
-[2]: https://www.nuget.org/packages/Dynatello
-
-## Example
-All examples can be found through the links.
-
-### Extend DTO's
-[Extend a DTO to contain the mashaller functionality:](samples/ExtendDto)
-
-```csharp
-IRequestHandler<string, Cat?> getById = Cat
-    .FromId.OnTable("TABLE")
-    .ToGetRequestHandler(x => x.ToGetRequestBuilder());
-
-if (args.Length == 1)
-{
-    Cat? response = await getById.Send(args[0], CancellationToken.None);
-
-    Console.WriteLine(response);
-}
-else
-{
-    throw new NotImplementedException();
-}
-
-[DynamoDBMarshaller(AccessName = "FromId", ArgumentType = typeof(string))]
-public partial record Cat(string Id, string Name, double Cuteness);
-```
-
-
-### Request middleware
-[Every `IRequestHandler<Targ, TResponse>` supports middlewares:](samples/RequestPipeline)
-
-
-
-```csharp
-IRequestHandler<string, Cat?> getById = Cat
-    .FromId.OnTable("TABLE")
-    .ToGetRequestHandler(
-        x => x.ToGetRequestBuilder(),
-        x =>
-        {
-            x.RequestsPipelines.Add(new RequestDurationConsoleLogger());
-        }
-    );
-
-if (args.Length == 1)
-{
-    Cat? response = await getById.Send(args[0], CancellationToken.None);
-
-    Console.WriteLine(response);
-}
-else
-{
-    throw new NotImplementedException();
-}
-
-public class RequestDurationConsoleLogger : IRequestPipeLine
-{
-    public async Task<AmazonWebServiceResponse> Invoke(
-        RequestContext requestContext,
-        Func<RequestContext, Task<AmazonWebServiceResponse>> continuation
-    )
-    {
-        var stopwatch = Stopwatch.StartNew();
-
-        var result = await continuation(requestContext);
-        Console.WriteLine($"Duration: {stopwatch.Elapsed}");
-        
-        return result;
-    }
-}
-
-[DynamoDBMarshaller(AccessName = "FromId", ArgumentType = typeof(string))]
-public partial record Cat(string Id, string Name, double Cuteness);
-```
-
-
-### Repository
-[Through a repository pattern:](samples/Repository)
-
-```csharp
 public partial class DynamoDBEmployeeRepository : IEmployeeRepository
 {
     private readonly IRequestHandler<(string department, string email), Employee?> _getEmployee;
@@ -242,4 +148,3 @@ public partial class DynamoDBEmployeeRepository : IEmployeeRepository
         CancellationToken cancellationToken
     ) => _deleteEmployee.Send((department, email), cancellationToken);
 }
-```
