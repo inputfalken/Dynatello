@@ -10,7 +10,7 @@
         <Authors>Robert Andersson</Authors>
         <Description>Exends DynamoDB.SourceGenerator to be combined with unified handlers and request builders.</Description>
         <Copyright>Robert Anderson</Copyright>
-        <PackageProjectUrl>https://github.com/inputfalken/DynamoDB.SourceGenerator</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/inputfalken/Dynatello</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/inputfalken/Dynatello</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -19,8 +19,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DynamoDBGenerator" Version="0.8.5"/>
-        <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="0.8.5"/>
+        <PackageReference Include="DynamoDBGenerator" Version="0.8.6"/>
+        <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="0.8.6"/>
     </ItemGroup>
 
 </Project>
