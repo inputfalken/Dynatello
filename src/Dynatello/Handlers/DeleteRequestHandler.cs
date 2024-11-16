@@ -5,17 +5,17 @@ namespace Dynatello.Handlers;
 
 internal sealed class DeleteRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
 {
-    private readonly HandlerOptions _handlerOptions;
+    private readonly HandlerOptions _options;
     private readonly Func<TArg, DeleteItemRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _createItem;
 
     internal DeleteRequestHandler(
-        HandlerOptions handlerOptions,
+        HandlerOptions options,
         Func<TArg, DeleteItemRequest> createRequest,
         Func<Dictionary<string, AttributeValue>, T> createItem
     )
     {
-        _handlerOptions = handlerOptions;
+        _options = options;
         _createRequest = createRequest;
         _createItem = createItem;
     }
@@ -24,9 +24,9 @@ internal sealed class DeleteRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     {
         var request = _createRequest(arg);
         var response = await request.SendRequest(
-            _handlerOptions.RequestsPipelines,
+            _options.RequestsPipelines,
             (x, y, z) => y.DeleteItemAsync(x, z),
-            _handlerOptions.AmazonDynamoDB,
+            _options.AmazonDynamoDB,
             cancellationToken
         );
 

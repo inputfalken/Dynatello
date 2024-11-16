@@ -12,21 +12,19 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     where T : notnull
     where TArg : notnull
 {
-    private readonly IAmazonDynamoDB _client;
+    private readonly HandlerOptions _options;
     private readonly Func<TArg, GetItemRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _createItem;
-    private readonly IEnumerable<IRequestPipeLine> _requestsPipelines;
 
     internal GetRequestHandler(
-        HandlerOptions handlerOptions,
+        HandlerOptions options,
         Func<TArg, GetItemRequest> createRequest,
         Func<Dictionary<string, AttributeValue>, T> createItem
     )
     {
-        _client = handlerOptions.AmazonDynamoDB;
+        _options = options;
         _createRequest = createRequest;
         _createItem = createItem;
-        _requestsPipelines = handlerOptions.RequestsPipelines;
     }
 
     /// <summary>
@@ -41,10 +39,10 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var response = await _createRequest(arg)
-            .SendRequest<GetItemRequest, GetItemResponse>(
-                _requestsPipelines,
+            .SendRequest(
+                _options.RequestsPipelines,
                 (x, y, z) => y.GetItemAsync(x, z),
-                _client,
+                _options.AmazonDynamoDB,
                 cancellationToken
             );
 

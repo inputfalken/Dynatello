@@ -7,8 +7,7 @@ namespace Dynatello.Handlers;
 internal sealed class PutRequestHandler<T> : IRequestHandler<T, T?>
     where T : notnull
 {
-    private readonly IAmazonDynamoDB _client;
-    private readonly IList<IRequestPipeLine> _pipelines;
+    private readonly HandlerOptions _options;
     private readonly Func<T, PutItemRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _createItem;
 
@@ -18,8 +17,7 @@ internal sealed class PutRequestHandler<T> : IRequestHandler<T, T?>
         Func<Dictionary<string, AttributeValue>, T> createItem
     )
     {
-        _client = options.AmazonDynamoDB;
-        _pipelines = options.RequestsPipelines;
+        _options = options;
         _createRequest = createRequest;
         _createItem = createItem;
     }
@@ -29,10 +27,10 @@ internal sealed class PutRequestHandler<T> : IRequestHandler<T, T?>
     {
         var request = _createRequest(arg);
 
-        var response = await request.SendRequest<PutItemRequest, PutItemResponse>(
-            _pipelines,
+        var response = await request.SendRequest(
+            _options.RequestsPipelines,
             (x, y, z) => y.PutItemAsync(x, z),
-            _client,
+            _options.AmazonDynamoDB,
             cancellationToken
         );
 
