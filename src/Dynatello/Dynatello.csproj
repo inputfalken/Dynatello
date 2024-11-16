@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
+        <Nullable>enable</Nullable>
         <PackageVersion>0.0.0</PackageVersion>
+        <LangVersion>12</LangVersion>
         <Title>Dynatello</Title>
         <Authors>Robert Andersson</Authors>
         <Description>Exends DynamoDB.SourceGenerator to be combined with unified handlers and request builders.</Description>
@@ -19,8 +20,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DynamoDBGenerator" Version="0.8.6"/>
-        <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="0.8.6"/>
+        <PackageReference Include="DynamoDBGenerator" Version="1.0.1"/>
+        <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="1.0.1"/>
     </ItemGroup>
 
 </Project>

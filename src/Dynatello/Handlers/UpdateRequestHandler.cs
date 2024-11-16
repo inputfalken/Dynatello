@@ -1,4 +1,3 @@
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Dynatello.Pipelines;
 
@@ -7,8 +6,7 @@ namespace Dynatello.Handlers;
 internal sealed class UpdateRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     where T : notnull
 {
-    private readonly IList<IRequestPipeLine> _pipelines;
-    private readonly IAmazonDynamoDB _dynamoDb;
+    private readonly HandlerOptions _options;
     private readonly Func<TArg, UpdateItemRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _unmarshall;
 
@@ -18,8 +16,7 @@ internal sealed class UpdateRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
         Func<Dictionary<string, AttributeValue>, T> unmarshall
     )
     {
-        _pipelines = options.RequestsPipelines;
-        _dynamoDb = options.AmazonDynamoDB;
+        _options = options;
         _createRequest = createRequest;
         _unmarshall = unmarshall;
     }
@@ -28,9 +25,9 @@ internal sealed class UpdateRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     {
         var request = _createRequest(arg);
         var response = await request.SendRequest<UpdateItemRequest, UpdateItemResponse>(
-            _pipelines,
+            _options.RequestsPipelines,
             (x, y, z) => y.UpdateItemAsync(x, z),
-            _dynamoDb,
+            _options.AmazonDynamoDB,
             cancellationToken
         );
 

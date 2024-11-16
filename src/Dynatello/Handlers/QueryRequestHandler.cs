@@ -6,8 +6,7 @@ namespace Dynatello.Handlers;
 
 internal sealed class QueryRequestHandler<TArg, T> : IRequestHandler<TArg, IReadOnlyList<T>>
 {
-    private readonly IAmazonDynamoDB _client;
-    private readonly IList<IRequestPipeLine> _pipelines;
+    private readonly HandlerOptions _options;
     private readonly Func<TArg, QueryRequest> _createRequest;
     private readonly Func<Dictionary<string, AttributeValue>, T> _createItem;
 
@@ -17,8 +16,7 @@ internal sealed class QueryRequestHandler<TArg, T> : IRequestHandler<TArg, IRead
         Func<Dictionary<string, AttributeValue>, T> createItem
     )
     {
-        _client = options.AmazonDynamoDB;
-        _pipelines = options.RequestsPipelines;
+        _options = options;
         _createRequest = createRequest;
         _createItem = createItem;
     }
@@ -32,9 +30,9 @@ internal sealed class QueryRequestHandler<TArg, T> : IRequestHandler<TArg, IRead
         do
         {
             response = await request.SendRequest<QueryRequest, QueryResponse>(
-                _pipelines,
+                _options.RequestsPipelines,
                 (x, y, z) => y.QueryAsync(x, z),
-                _client,
+                _options.AmazonDynamoDB,
                 cancellationToken
             );
             request.ExclusiveStartKey = response.LastEvaluatedKey;
