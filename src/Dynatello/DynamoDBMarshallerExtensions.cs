@@ -1,14 +1,12 @@
-using System.Net;
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator;
-using Dynatello.Builders;
-using Dynatello.Builders.Types;
-using Dynatello.Handlers;
 using static DynamoDBGenerator.Extensions.DynamoDBMarshallerExtensions;
 
 namespace Dynatello;
 
+/// <summary>
+/// 
+/// </summary>
 public static class DynamoDBMarshallerExtensions
 {
     internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>(

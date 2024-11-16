@@ -5,7 +5,7 @@ using Dynatello.Handlers;
 
 IRequestHandler<string, Cat?> getById = Cat
     .FromId.OnTable("TABLE")
-    .ToGetRequestHandler(x => x.ToGetRequestBuilder());
+    .ToGetRequestHandler(builder => builder.ToGetRequestBuilder());
 
 if (args.Length == 1)
 {

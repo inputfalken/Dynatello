@@ -2,6 +2,10 @@ using Amazon.DynamoDBv2;
 
 namespace Dynatello.Pipelines;
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TRequest"></typeparam>
 public sealed record RequestContext<TRequest> : RequestContext
     where TRequest : AmazonDynamoDBRequest
 {

@@ -1,6 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
 using DynamoDBGenerator.Attributes;
 
+namespace Repository;
+
 [DynamoDBMarshaller(AccessName = "GetByEmail", ArgumentType = typeof(string))]
 [DynamoDBMarshaller(
     AccessName = "GetEmployee",

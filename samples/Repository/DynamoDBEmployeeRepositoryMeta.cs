@@ -2,9 +2,11 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 
+namespace Repository;
+
 public partial class DynamoDBEmployeeRepository
 {
-    public const string TableName = "Employees";
+    private const string TableName = "Employees";
 
     public async Task GenerateEmployeesInDeparment(
         string department,

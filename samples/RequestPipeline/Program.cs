@@ -9,10 +9,10 @@ using Dynatello.Pipelines;
 IRequestHandler<string, Cat?> getById = Cat
     .FromId.OnTable("TABLE")
     .ToGetRequestHandler(
-        x => x.ToGetRequestBuilder(),
-        x =>
+        builder => builder.ToGetRequestBuilder(),
+        options =>
         {
-            x.RequestsPipelines.Add(new RequestDurationConsoleLogger());
+            options.RequestsPipelines.Add(new RequestDurationConsoleLogger());
         }
     );
 

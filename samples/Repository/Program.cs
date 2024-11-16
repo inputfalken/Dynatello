@@ -1,6 +1,8 @@
 ﻿using Amazon.DynamoDBv2;
 
-internal class Program
+namespace Repository;
+
+internal static class Program
 {
     public static async Task CreateDepartments(
         DynamoDBEmployeeRepository repository,
@@ -19,7 +21,7 @@ internal class Program
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
         var dynamoDb = new AmazonDynamoDBClient(
-            new AmazonDynamoDBConfig() { ServiceURL = "http://localhost:8000" }
+            new AmazonDynamoDBConfig { ServiceURL = "http://localhost:8000" }
         );
         var repository = new DynamoDBEmployeeRepository(dynamoDb);
         await CreateDepartments(repository, cts.Token);
@@ -46,7 +48,7 @@ internal class Program
                 "IT",
                 "someEmail@test.com",
                 "Andersson",
-                new[] { "Software Development" },
+                ["Software Development"],
                 new Metadata(DateTime.UtcNow)
             ),
             cancellationToken

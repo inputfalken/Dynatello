@@ -4,6 +4,8 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
 using Dynatello.Pipelines;
 
+namespace Repository;
+
 public class RequestLogAnalyzer : IRequestPipeLine
 {
     private static void WriteLine(string? input)

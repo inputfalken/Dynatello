@@ -1,3 +1,5 @@
+namespace Repository;
+
 public interface IEmployeeRepository
 {
     public Task<Employee?> GetPersonById(
