@@ -17,10 +17,17 @@ namespace Dynatello;
 /// <typeparam name="TArgumentReferences">
 /// A type that represents the type param <typeparamref name="TArg"/> with AttributeExpression support.
 /// </typeparam>
-public interface ITableAccess<T, TArg, TReferences, TArgumentReferences>
+public interface ITableAccess<T, in TArg, out TReferences, out TArgumentReferences>
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
+    /// <summary>
+    /// Gets the Marshaller
+    /// </summary>
     public IDynamoDBMarshaller<T, TArg, TReferences, TArgumentReferences> Marshaller { get; }
+    
+    /// <summary>
+    /// Gets the table name
+    /// </summary>
     public string TableName { get; }
 }

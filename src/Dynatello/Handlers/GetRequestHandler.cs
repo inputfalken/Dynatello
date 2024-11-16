@@ -39,7 +39,7 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var response = await _createRequest(arg)
-            .SendRequest<GetItemRequest, GetItemResponse>(
+            .SendRequest(
                 _options.RequestsPipelines,
                 (x, y, z) => y.GetItemAsync(x, z),
                 _options.AmazonDynamoDB,

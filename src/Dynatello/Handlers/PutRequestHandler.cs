@@ -27,7 +27,7 @@ internal sealed class PutRequestHandler<T> : IRequestHandler<T, T?>
     {
         var request = _createRequest(arg);
 
-        var response = await request.SendRequest<PutItemRequest, PutItemResponse>(
+        var response = await request.SendRequest(
             _options.RequestsPipelines,
             (x, y, z) => y.PutItemAsync(x, z),
             _options.AmazonDynamoDB,

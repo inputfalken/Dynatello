@@ -29,7 +29,7 @@ internal sealed class QueryRequestHandler<TArg, T> : IRequestHandler<TArg, IRead
         var list = new List<T>();
         do
         {
-            response = await request.SendRequest<QueryRequest, QueryResponse>(
+            response = await request.SendRequest(
                 _options.RequestsPipelines,
                 (x, y, z) => y.QueryAsync(x, z),
                 _options.AmazonDynamoDB,

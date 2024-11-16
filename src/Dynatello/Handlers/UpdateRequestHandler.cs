@@ -24,7 +24,7 @@ internal sealed class UpdateRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
     public async Task<T?> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
-        var response = await request.SendRequest<UpdateItemRequest, UpdateItemResponse>(
+        var response = await request.SendRequest(
             _options.RequestsPipelines,
             (x, y, z) => y.UpdateItemAsync(x, z),
             _options.AmazonDynamoDB,
