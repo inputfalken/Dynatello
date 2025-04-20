@@ -20,8 +20,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DynamoDBGenerator" Version="1.2.1"/>
-        <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="1.2.1"/>
+        <PackageReference Include="DynamoDBGenerator" Version="1.2.2"/>
+        <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="1.2.2"/>
     </ItemGroup>
 
 </Project>
