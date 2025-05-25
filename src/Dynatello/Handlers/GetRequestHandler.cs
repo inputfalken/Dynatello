@@ -46,6 +46,6 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
                 cancellationToken
             );
 
-        return response.IsItemSet ? _createItem(response.Item) : default;
+        return response.IsItemSet && response.Item.Count > 0 ? _createItem(response.Item) : default;
     }
 }

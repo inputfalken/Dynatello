@@ -30,7 +30,7 @@ public class QueryRequestHandlerTests
             .QueryWithCuteness.OnTable("TABLE")
             .ToQueryRequestHandler(
                 x =>
-                    x.WithKeyConditionExpression(((x, y) => $"{x.Id} = {y.Id}"))
+                    x.WithKeyConditionExpression((x, y) => $"{x.Id} = {y.Id}")
                         .ToQueryRequestBuilder() with
                     {
                         IndexName = "INDEX",

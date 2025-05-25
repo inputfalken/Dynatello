@@ -32,7 +32,7 @@ public class DeleteRequestHandlerTests
                 x => x.ToDeleteRequestBuilder() with { ReturnValues = ReturnValue.ALL_OLD },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected.Id, default);
+            .Send(expected.Id, CancellationToken.None);
 
         Assert.Equal(expected, actual);
     }
@@ -53,7 +53,7 @@ public class DeleteRequestHandlerTests
                 x => x.ToDeleteRequestBuilder(),
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected.Id, default);
+            .Send(expected.Id, CancellationToken.None);
 
         Assert.Null(actual);
     }
