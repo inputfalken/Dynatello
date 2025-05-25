@@ -254,7 +254,7 @@ public class ToDeleteItemRequestTests
                                 },
                             },
                             TableName = "TABLE",
-                            ExpressionAttributeNames = new Dictionary<string, string>(),
+                            ExpressionAttributeNames = null,
                             ReturnConsumedCapacity = null,
                         }
                     )
@@ -290,7 +290,7 @@ public class ToDeleteItemRequestTests
                                 },
                             },
                             TableName = "TABLE",
-                            ExpressionAttributeNames = new Dictionary<string, string>(),
+                            ExpressionAttributeNames = null,
                             ReturnConsumedCapacity = null,
                         }
                     )

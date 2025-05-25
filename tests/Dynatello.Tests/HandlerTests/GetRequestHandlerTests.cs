@@ -13,7 +13,7 @@ public class GetRequestHandlerTests
 {
     private class TestPipeLine : IRequestPipeLine
     {
-        public DateTime? TimeStamp = null;
+        public DateTime? TimeStamp;
 
         public async Task<AmazonWebServiceResponse> Invoke(
             RequestContext requestContext,
@@ -120,7 +120,7 @@ public class GetRequestHandlerTests
 
         amazonDynamoDB
             .GetItemAsync(Arg.Any<GetItemRequest>())
-            .Returns(new GetItemResponse { IsItemSet = false });
+            .Returns(new GetItemResponse { IsItemSet = false, Item = null}); // does not succeed with empty dictionary
 
         var actual = await Cat
             .GetById.OnTable("TABLE")
@@ -128,8 +128,8 @@ public class GetRequestHandlerTests
                 x => x.ToGetRequestBuilder(),
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected.Id, default);
+            .Send(expected.Id, CancellationToken.None);
 
-        Assert.Equal((Cat)null!, actual);
+        Assert.Equal(null!, actual);
     }
 }

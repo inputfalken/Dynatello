@@ -37,7 +37,7 @@ public class QueryRequestHandlerTests
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send((Guid.NewGuid(), 2), default);
+            .Send((Guid.NewGuid(), 2), CancellationToken.None);
 
         Assert.Equal(expected, actual);
     }
@@ -46,23 +46,23 @@ public class QueryRequestHandlerTests
     public async Task Send_SuccessChunkedMock_ShouldReturnAttributes()
     {
         var amazonDynamoDB = Substitute.For<IAmazonDynamoDB>();
-        const int ElementCount = 20;
-        const int ChunkCount = 5;
+        const int elementCount = 20;
+        const int chunkCount = 5;
         var chunks = Cat
-            .Fixture.CreateMany<Cat>(ElementCount)
-            .Chunk(ChunkCount)
+            .Fixture.CreateMany<Cat>(elementCount)
+            .Chunk(chunkCount)
             .Select(
                 (elements, index) =>
                 {
                     var lastId = elements[^1].Id.ToString();
                     var key =
-                        index == (ElementCount / ChunkCount) - 1
-                            ? new()
-                            : new Dictionary<string, AttributeValue>()
+                        index == elementCount / chunkCount - 1
+                            ? new Dictionary<string, AttributeValue>()
+                            : new Dictionary<string, AttributeValue>
                             {
                                 {
                                     nameof(Cat.Id),
-                                    new AttributeValue() { S = lastId }
+                                    new AttributeValue { S = lastId }
                                 },
                             };
                     return new
@@ -90,15 +90,15 @@ public class QueryRequestHandlerTests
                         .First()
                         .Elements.Select(x => Cat.QueryWithCuteness.Marshall(x))
                         .ToList(),
-                    LastEvaluatedKey = chunks.First().Key,
+                    LastEvaluatedKey = chunks.First().Key
                 },
                 chunks
                     .Skip(1)
                     .Select(x => new QueryResponse
                     {
                         HttpStatusCode = System.Net.HttpStatusCode.OK,
-                        Items = x.Elements.Select(x => Cat.QueryWithCuteness.Marshall(x)).ToList(),
-                        LastEvaluatedKey = x.Key,
+                        Items = x.Elements.Select(static x => Cat.QueryWithCuteness.Marshall(x)).ToList(),
+                        LastEvaluatedKey = x.Key
                     })
                     .ToArray()
             );
@@ -107,14 +107,14 @@ public class QueryRequestHandlerTests
             .QueryWithCuteness.OnTable("TABLE")
             .ToQueryRequestHandler(
                 x =>
-                    x.WithKeyConditionExpression(((x, y) => $"{x.Id} = {y.Id}"))
+                    x.WithKeyConditionExpression(static (x, y) => $"{x.Id} = {y.Id}")
                         .ToQueryRequestBuilder() with
                     {
-                        IndexName = "INDEX",
+                        IndexName = "INDEX"
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send((Guid.NewGuid(), 2), default);
+            .Send((Guid.NewGuid(), 2), CancellationToken.None);
 
         Assert.Equal(chunks.SelectMany(x => x.Elements).ToArray(), actual);
     }
