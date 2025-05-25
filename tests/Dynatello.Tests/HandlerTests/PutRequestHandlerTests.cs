@@ -35,7 +35,7 @@ public class PutRequestHandlerTests
                 x => x.ToPutRequestBuilder() with { ReturnValues = new ReturnValue(returnValue) },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected, default);
+            .Send(expected, CancellationToken.None);
 
         Assert.Equal(expected, actual);
     }
@@ -64,7 +64,7 @@ public class PutRequestHandlerTests
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected, default);
+            .Send(expected, CancellationToken.None);
 
         Assert.Equal(actual, null);
     }

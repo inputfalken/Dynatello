@@ -47,14 +47,14 @@ public class ToQueryRequestTests
                             ReturnConsumedCapacity = null,
                             FilterExpression = null,
                             Limit = 0,
-                            ConsistentRead = false,
+                            ConsistentRead = null,
                             Select = null,
                             ProjectionExpression = null,
                             IndexName = null,
                             QueryFilter = null,
-                            ExclusiveStartKey = new Dictionary<string, AttributeValue>(),
+                            ExclusiveStartKey = null,
                             IsLimitSet = false,
-                            ScanIndexForward = false,
+                            ScanIndexForward = null
                         }
                     );
             });
@@ -109,14 +109,14 @@ public class ToQueryRequestTests
                             ReturnConsumedCapacity = null,
                             FilterExpression = "#Cuteness > :p2",
                             Limit = 0,
-                            ConsistentRead = false,
+                            ConsistentRead = null,
                             Select = null,
                             ProjectionExpression = null,
                             IndexName = null,
                             QueryFilter = null,
-                            ExclusiveStartKey = new Dictionary<string, AttributeValue>(),
+                            ExclusiveStartKey = null,
                             IsLimitSet = false,
-                            ScanIndexForward = false,
+                            ScanIndexForward = null
                         }
                     );
             });
