@@ -49,6 +49,11 @@ public readonly record struct QueryRequestBuilder<T> : IRequestBuilder<T, QueryR
     /// <inheritdoc cref="QueryRequest.ReturnConsumedCapacity" />
     public ReturnConsumedCapacity? ReturnConsumedCapacity { get; init; } = null;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="arg"></param>
+    /// <returns></returns>
     public QueryRequest Build(T arg)
     {
         var attributeExpression = _attributeExpressionSelector(arg);

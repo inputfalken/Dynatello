@@ -9,6 +9,9 @@ using static DynamoDBGenerator.Extensions.DynamoDBMarshallerExtensions;
 
 namespace Dynatello;
 
+/// <summary>
+/// 
+/// </summary>
 public static class DynamoDBMarshallerExtensions
 {
     internal static Func<TArg, Dictionary<string, AttributeValue>> ComposeKeys<TArg>(

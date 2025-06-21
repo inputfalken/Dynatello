@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PackageVersion>0.0.0</PackageVersion>
         <LangVersion>12</LangVersion>
         <Title>Dynatello</Title>

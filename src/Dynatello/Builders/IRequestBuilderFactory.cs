@@ -21,5 +21,8 @@ public interface IRequestBuilderFactory<T, in TArg, out TReferences, out TArgume
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public ITableAccess<T, TArg, TReferences, TArgumentReferences> TableAccess { get; }
 }

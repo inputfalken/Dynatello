@@ -48,6 +48,11 @@ public readonly record struct PutRequestBuilder<T> : IRequestBuilder<T, PutItemR
     public ReturnValuesOnConditionCheckFailure? ReturnValuesOnConditionCheckFailure { get; init; } =
         null;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
     public PutItemRequest Build(T element)
     {
         var request = new PutItemRequest

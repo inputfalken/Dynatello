@@ -2,18 +2,21 @@ using Amazon.DynamoDBv2;
 
 namespace Dynatello.Pipelines;
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TRequest"></typeparam>
 public sealed record RequestContext<TRequest> : RequestContext
     where TRequest : AmazonDynamoDBRequest
 {
-    internal RequestContext(TRequest request, CancellationToken cancellationToken)
-        : base(request, cancellationToken)
+    internal RequestContext(TRequest request, CancellationToken cancellationToken) : base(request, cancellationToken)
     {
-        Request = request;
     }
-
-    public TRequest Request { get; }
 }
 
+/// <summary>
+/// 
+/// </summary>
 public record RequestContext
 {
     internal RequestContext(AmazonDynamoDBRequest request, CancellationToken cancellationToken)
@@ -22,6 +25,12 @@ public record RequestContext
         CancellationToken = cancellationToken;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public AmazonDynamoDBRequest Request { get; }
+    /// <summary>
+    /// 
+    /// </summary>
     public CancellationToken CancellationToken { get; }
 }
