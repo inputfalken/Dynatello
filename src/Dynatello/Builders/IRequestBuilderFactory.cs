@@ -17,7 +17,7 @@ namespace Dynatello.Builders;
 /// <typeparam name="TArgumentReferences">
 /// A type that represents the type param <typeparamref name="TArg"/> with AttributeExpression support.
 /// </typeparam>
-public interface IRequestBuilderFactory<T, TArg, TReferences, TArgumentReferences>
+public interface IRequestBuilderFactory<T, in TArg, out TReferences, out TArgumentReferences>
     where TReferences : IAttributeExpressionNameTracker
     where TArgumentReferences : IAttributeExpressionValueTracker<TArg>
 {

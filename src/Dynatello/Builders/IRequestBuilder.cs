@@ -5,7 +5,7 @@ namespace Dynatello.Builders;
 /// <summary>
 /// Represents a request builder for AmazaonDynamoDB.
 /// </summary>
-public interface IRequestBuilder<T, TRequest>
+public interface IRequestBuilder<in T, out TRequest>
     where TRequest : AmazonDynamoDBRequest
 {
     /// <summary>
