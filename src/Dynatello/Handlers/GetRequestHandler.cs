@@ -1,3 +1,4 @@
+using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBGenerator.Exceptions;
@@ -46,6 +47,8 @@ internal sealed class GetRequestHandler<TArg, T> : IRequestHandler<TArg, T?>
                 cancellationToken
             );
 
-        return response.IsItemSet ? _createItem(response.Item) : default;
+        return response.IsItemSet is false || response.Item is null || response.Item.Count is 0
+            ? default
+            : _createItem(response.Item);
     }
 }

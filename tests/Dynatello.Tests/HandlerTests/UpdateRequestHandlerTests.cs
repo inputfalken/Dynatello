@@ -42,7 +42,7 @@ public class UpdateRequestHandlerTests
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send((expected.Id, expected.HomeId), default);
+            .Send((expected.Id, expected.HomeId), CancellationToken.None);
 
         Assert.Equal(expected, actual);
     }
@@ -72,7 +72,7 @@ public class UpdateRequestHandlerTests
                     },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send((Guid.NewGuid(), Guid.NewGuid()), default);
+            .Send((Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None);
 
         Assert.Equal(null, actual);
     }

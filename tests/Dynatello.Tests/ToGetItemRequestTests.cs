@@ -93,11 +93,11 @@ public class ToGetItemRequestTests
                                 },
                             },
                             TableName = "TABLE",
-                            ConsistentRead = false,
-                            ExpressionAttributeNames = new Dictionary<string, string>(),
+                            ConsistentRead = null,
+                            ExpressionAttributeNames = null,
                             ProjectionExpression = null,
                             ReturnConsumedCapacity = null,
-                            AttributesToGet = new List<string>(),
+                            AttributesToGet = null,
                         }
                     )
             );
@@ -132,11 +132,11 @@ public class ToGetItemRequestTests
                                 },
                             },
                             TableName = "TABLE",
-                            ConsistentRead = false,
-                            ExpressionAttributeNames = new Dictionary<string, string>(),
+                            ConsistentRead = null,
+                            ExpressionAttributeNames = null,
                             ProjectionExpression = null,
                             ReturnConsumedCapacity = null,
-                            AttributesToGet = new List<string>(),
+                            AttributesToGet = null,
                         }
                     )
             );

@@ -13,7 +13,7 @@ public class GetRequestHandlerTests
 {
     private class TestPipeLine : IRequestPipeLine
     {
-        public DateTime? TimeStamp = null;
+        public DateTime? TimeStamp;
 
         public async Task<AmazonWebServiceResponse> Invoke(
             RequestContext requestContext,
@@ -48,11 +48,11 @@ public class GetRequestHandlerTests
 
         var pipelines = new TestPipeLine[]
         {
-            new TestPipeLine(),
-            new TestPipeLine(),
-            new TestPipeLine(),
-            new TestPipeLine(),
-            new TestPipeLine(),
+            new(),
+            new(),
+            new(),
+            new(),
+            new(),
         };
 
         Assert.All(pipelines, x => Assert.Null(x.TimeStamp));
@@ -70,7 +70,7 @@ public class GetRequestHandlerTests
                     x.AmazonDynamoDB = amazonDynamoDB;
                 }
             )
-            .Send(expected.Id, default);
+            .Send(expected.Id, CancellationToken.None);
         Assert.Equal(expected, actual);
         Assert.All(pipelines, x => Assert.NotNull(x.TimeStamp));
         var pipeLineTimestamps = pipelines.Select(x => x.TimeStamp!.Value).ToArray();
@@ -79,7 +79,8 @@ public class GetRequestHandlerTests
             false,
             pipeLineTimestamps.Zip(
                 pipeLineTimestamps.Skip(1),
-                (x, y) => (x < y) && (y - x) < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
+                (x, y) => x < y &&
+                          y - x < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
             )
         );
     }
@@ -107,7 +108,7 @@ public class GetRequestHandlerTests
                 x => x.ToGetRequestBuilder(),
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected.Id, default);
+            .Send(expected.Id, CancellationToken.None);
 
         Assert.Equal(expected, actual);
     }
@@ -120,7 +121,7 @@ public class GetRequestHandlerTests
 
         amazonDynamoDB
             .GetItemAsync(Arg.Any<GetItemRequest>())
-            .Returns(new GetItemResponse { IsItemSet = false });
+            .Returns(new GetItemResponse { IsItemSet = false, Item = null });
 
         var actual = await Cat
             .GetById.OnTable("TABLE")
@@ -128,8 +129,8 @@ public class GetRequestHandlerTests
                 x => x.ToGetRequestBuilder(),
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
-            .Send(expected.Id, default);
+            .Send(expected.Id, CancellationToken.None);
 
-        Assert.Equal((Cat)null!, actual);
+        Assert.Equal(null!, actual);
     }
 }
