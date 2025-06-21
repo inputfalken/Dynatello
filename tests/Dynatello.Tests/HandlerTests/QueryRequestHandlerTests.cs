@@ -31,10 +31,10 @@ public class QueryRequestHandlerTests
             .ToQueryRequestHandler(
                 x =>
                     x.WithKeyConditionExpression((x, y) => $"{x.Id} = {y.Id}")
-                        .ToQueryRequestBuilder() with
-                    {
-                        IndexName = "INDEX",
-                    },
+                            .ToQueryRequestBuilder() with
+                        {
+                            IndexName = "INDEX",
+                        },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
             .Send((Guid.NewGuid(), 2), CancellationToken.None);
@@ -51,8 +51,7 @@ public class QueryRequestHandlerTests
         var chunks = Cat
             .Fixture.CreateMany<Cat>(elementCount)
             .Chunk(chunkCount)
-            .Select(
-                (elements, index) =>
+            .Select((elements, index) =>
                 {
                     var lastId = elements[^1].Id.ToString();
                     var key =
@@ -108,10 +107,10 @@ public class QueryRequestHandlerTests
             .ToQueryRequestHandler(
                 x =>
                     x.WithKeyConditionExpression(static (x, y) => $"{x.Id} = {y.Id}")
-                        .ToQueryRequestBuilder() with
-                    {
-                        IndexName = "INDEX"
-                    },
+                            .ToQueryRequestBuilder() with
+                        {
+                            IndexName = "INDEX"
+                        },
                 x => x.AmazonDynamoDB = amazonDynamoDB
             )
             .Send((Guid.NewGuid(), 2), CancellationToken.None);

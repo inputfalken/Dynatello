@@ -79,7 +79,8 @@ public class GetRequestHandlerTests
             false,
             pipeLineTimestamps.Zip(
                 pipeLineTimestamps.Skip(1),
-                (x, y) => x < y && y - x < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
+                (x, y) => x < y &&
+                          y - x < TimeSpan.FromMilliseconds(100) // ugly hack to verify that request comes last.
             )
         );
     }
@@ -120,7 +121,7 @@ public class GetRequestHandlerTests
 
         amazonDynamoDB
             .GetItemAsync(Arg.Any<GetItemRequest>())
-            .Returns(new GetItemResponse { IsItemSet = false});
+            .Returns(new GetItemResponse { IsItemSet = false, Item = null });
 
         var actual = await Cat
             .GetById.OnTable("TABLE")
