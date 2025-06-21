@@ -77,7 +77,9 @@ public class QueryRequestHandlerTests
         amazonDynamoDB
             .QueryAsync(
                 Arg.Is<QueryRequest>(x =>
-                    x.ExclusiveStartKey.Count == 0 || x.ExclusiveStartKey[nameof(Cat.Id)] != null
+                    x.ExclusiveStartKey == null 
+                    || x.ExclusiveStartKey.Count == 0 
+                    || x.ExclusiveStartKey[nameof(Cat.Id)] != null
                 ),
                 Arg.Any<CancellationToken>()
             )

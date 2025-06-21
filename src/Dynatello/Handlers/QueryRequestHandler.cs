@@ -24,21 +24,24 @@ internal sealed class QueryRequestHandler<TArg, T> : IRequestHandler<TArg, IRead
     public async Task<IReadOnlyList<T>> Send(TArg arg, CancellationToken cancellationToken)
     {
         var request = _createRequest(arg);
-        QueryResponse response;
-
         var list = new List<T>();
-        do
+        while (true)
         {
-            response = await request.SendRequest(
+            var response = await request.SendRequest(
                 _options.RequestsPipelines,
                 (x, y, z) => y.QueryAsync(x, z),
                 _options.AmazonDynamoDB,
                 cancellationToken
             );
-            request.ExclusiveStartKey = response.LastEvaluatedKey;
 
-            list.AddRange(response.Items.Select(_createItem));
-        } while (response.LastEvaluatedKey.Count > 0);
+            if (response.Items is { Count: > 0 })
+                list.AddRange(response.Items.Select(_createItem));
+            
+            if (response.LastEvaluatedKey is null or { Count: 0 })
+                break;
+
+            request.ExclusiveStartKey = response.LastEvaluatedKey;
+        }
 
         return list;
     }
