@@ -8,6 +8,10 @@ namespace Dynatello.Handlers;
 /// </summary>
 public sealed class HandlerOptions
 {
+    internal HandlerOptions()
+    {
+        
+    }
     private static AmazonDynamoDBClient? _defaultClient;
     private IAmazonDynamoDB? _client;
 
