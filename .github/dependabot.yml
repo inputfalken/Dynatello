@@ -6,6 +6,10 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "/src/Dynatello/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "nuget"
+    directory: "/tests/Dynatello.Tests/"
     schedule:
       interval: "weekly"
