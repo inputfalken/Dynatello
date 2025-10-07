@@ -21,7 +21,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DynamoDBGenerator" Version="2.1.1"/>
+        <PackageReference Include="DynamoDBGenerator" Version="2.1.2"/>
         <PackageReference Include="DynamoDBGenerator.SourceGenerator" Version="2.1.2"/>
     </ItemGroup>
 
